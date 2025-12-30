@@ -1,32 +1,97 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MCombat - Ingreso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCombat - Acceso</title>
     <style>
-        body { font-family: sans-serif; background-color: #1a1a1a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background-color: #333; padding: 40px; border-radius: 10px; text-align: center; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h1 { color: #e50914; margin-bottom: 30px; }
-        input { width: 80%; padding: 15px; font-size: 18px; text-align: center; border: none; border-radius: 5px; margin-bottom: 20px; }
-        button { background-color: #e50914; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; width: 100%; }
-        button:hover { background-color: #b20710; }
-        .mensaje { padding: 15px; margin-bottom: 20px; border-radius: 5px; font-weight: bold; }
-        .success { background-color: #2ecc71; color: #fff; }
-        .error { background-color: #e74c3c; color: #fff; }
-        
-        /* Estilo extra para el botón de Excel */
-        .admin-zone { margin-top: 30px; padding-top: 20px; border-top: 1px solid #555; }
-        .btn-excel { background-color: #27ae60; font-size: 14px; padding: 10px 15px; display: inline-block; }
-        .btn-excel:hover { background-color: #219150; }
+        /* Diseño Dark Gym */
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Nuevo fondo degradado */
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            backdrop-filter: blur(10px); /* Efecto vidrio borroso */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .logo-img {
+            width: 120px; /* Tamaño controlado del logo */
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 50%; /* Opcional: hace el logo redondo si es cuadrado */
+        }
+
+        h2 { margin-bottom: 25px; font-weight: 300; letter-spacing: 1px; }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { outline: none; background: rgba(255, 255, 255, 0.2); }
+
+        .btn-main {
+            width: 100%;
+            padding: 15px;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+            transition: 0.3s;
+        }
+        .btn-main:hover { transform: scale(1.05); background: #f40612; }
+
+        .btn-excel {
+            display: inline-block;
+            margin-top: 30px;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 12px;
+            border: 1px solid #444;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+        .btn-excel:hover { color: white; border-color: white; background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <h1>🥊 MCombat Acceso</h1>
+        <img src="{% static 'img/logo.png' %}" alt="Logo MCombat" class="logo-img">
         
+        <h2>BIENVENIDO</h2>
+
         {% if messages %}
             {% for message in messages %}
-                <div class="mensaje {{ message.tags }}">
+                <div style="background: rgba(46, 204, 113, 0.2); padding: 10px; border-radius: 10px; margin-bottom: 15px; color: #2ecc71;">
                     {{ message }}
                 </div>
             {% endfor %}
@@ -34,16 +99,14 @@
 
         <form method="POST">
             {% csrf_token %}
-            <input type="text" name="dni" placeholder="Ingresa tu DNI aquí" autofocus required autocomplete="off">
-            <button type="submit">MARCAR ASISTENCIA</button>
+            <input type="text" name="dni" placeholder="Ingresa tu DNI" autofocus required autocomplete="off">
+            <button type="submit" class="btn-main">MARCAR ASISTENCIA</button>
         </form>
 
-        <div class="admin-zone">
-            <p style="font-size: 12px; color: #888; margin-bottom: 10px;">Zona Administrativa</p>
-            <a href="{% url 'exportar_excel' %}" style="background-color: green; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 14px;">
-                📊 Descargar Excel
-            </a>
-        </div>
-        </div>
+        <a href="{% url 'exportar_excel' %}" class="btn-excel">
+            📊 Descargar Reporte
+        </a>
+    </div>
+
 </body>
 </html>
