@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Alumno, Asistencia, Pago
 from django.utils import timezone
+import openpyxl
+from django.http import HttpResponse
 
 def registro_asistencia(request):
     if request.method == 'POST':
@@ -33,3 +35,37 @@ def registro_asistencia(request):
         return redirect('registro_asistencia')
 
     return render(request, 'registro.html')
+
+def exportar_alumnos_excel(request):
+    # 1. Crear el libro de Excel (el archivo)
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = 'Alumnos MCombat'
+
+    # 2. Crear los encabezados (la primera fila en negrita)
+    headers = ['ID', 'Nombre', 'Apellido', 'DNI', 'Fecha Registro']
+    worksheet.append(headers)
+
+    # 3. Sacar los datos de la base de datos
+    # (Asegúrate de que tu modelo se llame 'Alumno', si no, cámbialo aquí)
+    alumnos = Alumno.objects.all()
+
+    # 4. Escribir fila por fila
+    for alumno in alumnos:
+        # Ajusta estos campos según cómo se llamen en tu models.py
+        worksheet.append([
+            alumno.id,
+            alumno.nombre,
+            alumno.apellido,
+            alumno.dni,
+            str(alumno.fecha_registro) # Convertimos fecha a texto
+        ])
+
+    # 5. Preparar la respuesta para descargar
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="reporte_alumnos.xlsx"'
+    
+    workbook.save(response)
+    return response
