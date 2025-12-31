@@ -1,0 +1,12 @@
+PARA ENCENDER EL SERVIDOR
+python manage.py runserver
+
+-------------------------------
+PANEL DE REGISTRO
+http://127.0.0.1:8000
+
+-------------------------------
+PANEL DE ADMINISTRADOR
+http://127.0.0.1:8000/admin/
+
+-------------------------------
