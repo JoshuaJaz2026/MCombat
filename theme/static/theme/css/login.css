@@ -187,3 +187,48 @@ body.login {
 .password-reset-link a:hover {
     color: #6c5ce7;
 }
+
+/* =========================================
+   PARCHE PARA CELULARES (RESPONSIVE)
+   ========================================= */
+
+@media screen and (max-width: 768px) {
+    
+    /* 1. Permitir scroll vertical (por si el teclado tapa los botones) */
+    body.login {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto; 
+        flex-direction: column;
+    }
+
+    #container {
+        flex-direction: column;
+    }
+
+    /* 2. Ocultar la sección del video en celulares para ahorrar espacio y datos */
+    .login-promo-section {
+        display: none;
+    }
+
+    /* 3. El formulario ahora ocupa el 100% de la pantalla */
+    #content {
+        flex: 1;          /* Ocupar todo el espacio disponible */
+        width: 100%;      /* Ancho total */
+        max-width: 100%;  /* Quitar el límite de 500px */
+        padding: 1.5rem;  /* Un poco menos de relleno */
+        background-color: #1a1a2e; /* Mismo color de fondo */
+    }
+
+    /* 4. Ajustar el contenedor del formulario para que no toque los bordes */
+    .login-form-container {
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    /* 5. Títulos un poco más pequeños */
+    .login-form-container h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+}
