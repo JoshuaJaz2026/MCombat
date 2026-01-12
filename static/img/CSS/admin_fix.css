@@ -1,0 +1,38 @@
+/* static/css/admin_fix.css */
+
+/* === FUERZA BRUTA: ALTO CONTRASTE === */
+/* Obligamos a las cajas a ser Blancas con Texto Negro siempre */
+
+.selector select, 
+.selector select option,
+.selector-available select, 
+.selector-chosen select {
+    background-color: #ffffff !important; /* Fondo BLANCO Puro */
+    color: #000000 !important;            /* Texto NEGRO Puro */
+    border: 1px solid #ccc !important;
+}
+
+/* Aseguramos que las opciones no seleccionadas también se vean */
+option:not(:checked) {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Cuando seleccionas una opción: Fondo Azul y Texto Blanco */
+.selector select option:checked,
+.selector select option:focus {
+    background-color: #007bff !important; /* Azul */
+    color: #ffffff !important;            /* Blanco */
+}
+
+/* Arreglo para la cajita de búsqueda ("Filtro") */
+.selector .selector-filter input {
+    color: white !important;
+    background: #333 !important;
+}
+
+/* Iconos de las flechas (invertir color) */
+.selector .selector-chooser li a {
+    filter: invert(1);
+    opacity: 0.8;
+}

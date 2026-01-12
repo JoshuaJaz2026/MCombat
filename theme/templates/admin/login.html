@@ -1,0 +1,123 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - MCombat</title>
+    <link rel="stylesheet" href="{% static 'theme/css/login.css' %}">
+    <style>
+        /* Agregamos un pequeño estilo extra para el link de recuperación */
+        .password-reset-link a:hover {
+            color: white !important;
+            text-decoration: underline !important;
+        }
+    </style>
+</head>
+<body class="login">
+    <div id="container">
+        
+        <div class="login-promo-section">
+            
+            <video class="bg-video active" autoplay muted playsinline preload="auto">
+                <source src="{% static 'img/video/pelea01.mp4' %}" type="video/mp4">
+            </video>
+
+            <video class="bg-video" muted playsinline preload="auto">
+                <source src="{% static 'img/video/pelea02.mp4' %}" type="video/mp4">
+            </video>
+
+            <video class="bg-video" muted playsinline preload="auto">
+                <source src="{% static 'img/video/pelea03.mp4' %}" type="video/mp4">
+            </video>
+
+            <div class="login-promo-content">
+                <h1>Capturando Momentos,<br>Creando Recuerdos.</h1>
+                <p>Bienvenido a MCombat Academy.</p>
+            </div>
+        </div>
+
+        <div id="content">
+            <div class="login-form-container">
+                <h2>Iniciar Sesión</h2>
+                <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+                    
+                    {% if form.errors and not form.non_field_errors %}
+                    <p class="errornote">Por favor corrige los errores.</p>
+                    {% endif %}
+                    
+                    {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    <p class="errornote">{{ error }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    
+                    <div class="form-row">
+                        <label for="id_username">Usuario:</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+                    
+                    <div class="form-row">
+                        <label for="id_password">Contraseña:</label>
+                        {{ form.password }}
+                        {{ form.password.errors }}
+                        <input type="hidden" name="next" value="{{ next }}">
+                    </div>
+                    
+                    <div class="submit-row">
+                        <input type="submit" value="Iniciar Sesión">
+                    </div>
+
+                    <div class="password-reset-link" style="text-align: center; margin-top: 20px;">
+                        <a href="{% url 'password_reset' %}" style="color: rgba(255, 255, 255, 0.6); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Seleccionamos TODOS los videos que tengan la clase 'bg-video'
+            const videos = document.querySelectorAll('.bg-video');
+            let currentIndex = 0; // Empezamos por el primero (índice 0)
+
+            // Función para pasar al siguiente video
+            function playNextVideo() {
+                // 1. Identificar el video actual y el siguiente
+                const currentVideo = videos[currentIndex];
+                
+                // Calculamos cuál es el siguiente (si es el último, volvemos al 0)
+                const nextIndex = (currentIndex + 1) % videos.length;
+                const nextVideo = videos[nextIndex];
+
+                // 2. Preparar y reproducir el siguiente
+                nextVideo.play();
+                nextVideo.classList.add('active'); // Esto activa el Fade In (aparece)
+
+                // 3. Ocultar el actual
+                currentVideo.classList.remove('active'); // Esto activa el Fade Out (desaparece)
+
+                // 4. Pausar y reiniciar el video viejo después de la transición
+                // (Esperamos 1.5 segundos que es lo que dura la transición CSS)
+                setTimeout(() => {
+                    currentVideo.pause();
+                    currentVideo.currentTime = 0;
+                }, 1500);
+
+                // 5. Actualizar el índice
+                currentIndex = nextIndex;
+            }
+
+            // Agregamos el "detector de final" a CADA video de la lista
+            videos.forEach(video => {
+                video.addEventListener('ended', playNextVideo);
+            });
+        });
+    </script>
+</body>
+</html>

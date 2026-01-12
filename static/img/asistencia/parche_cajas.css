@@ -1,0 +1,33 @@
+/* asistencia/static/asistencia/parche_cajas.css */
+
+/* FORZAMOS MODO OSCURO */
+/* Fondo Gris Oscuro y Texto Blanco para que coincida con el tema */
+
+.selector select, 
+.selector select option,
+select[multiple] {
+    background-color: #333333 !important; /* Gris Oscuro */
+    color: #ffffff !important;            /* Texto Blanco */
+    border: 1px solid #555 !important;
+}
+
+/* Opciones NO seleccionadas */
+option:not(:checked) {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+}
+
+/* Al pasar el mouse o seleccionar */
+.selector select option:checked,
+.selector select option:focus,
+.selector select option:hover {
+    background-color: #d9534f !important; /* Rojo MCombat */
+    color: #ffffff !important;
+}
+
+/* La barrita de filtro */
+.selector .selector-filter input {
+    background-color: #444 !important;
+    color: #fff !important;
+    border: 1px solid #666 !important;
+}

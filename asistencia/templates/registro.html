@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCombat - Registro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+
+        /* --- TARJETA PRINCIPAL --- */
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease;
+        }
+
+        /* --- ESTILOS DE RESULTADO (VERDE/ROJO) --- */
+        .card.exito {
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .card.error {
+            border: 2px solid #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.4);
+        }
+
+        /* --- FOTO DE PERFIL --- */
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- TEXTOS --- */
+        .logo-img {
+            width: 100px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .student-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            text-transform: uppercase;
+        }
+
+        .message-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        /* Colores de texto según estado */
+        .text-success {
+            color: #2ecc71;
+        }
+
+        .text-danger {
+            color: #e74c3c;
+        }
+
+        /* --- FORMULARIOS --- */
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- BOTONES --- */
+        .btn-main {
+            width: 100%;
+            padding: 15px;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+            transition: 0.3s;
+        }
+
+        .btn-main:hover {
+            transform: scale(1.05);
+            background: #f40612;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid white;
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: black;
+        }
+
+        .btn-excel {
+            display: inline-block;
+            margin-top: 30px;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 12px;
+            border: 1px solid #444;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .btn-excel:hover {
+            color: white;
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- DISCIPLINAS (Etiquetas) --- */
+        .badges-container {
+            margin: 15px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            margin: 2px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            background: #f1c40f;
+            color: #000;
+        }
+
+        /* --- BARRA SUPERIOR USUARIO --- */
+        .user-bar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .welcome-text strong {
+            color: #fff;
+            text-transform: capitalize;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid #e50914;
+            color: #e50914;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #e50914;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="user-bar">
+        <span class="welcome-text">Bienvenido, <strong>{{ user.username }}</strong></span>
+        <form action="{% url 'logout' %}" method="post" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">Cerrar Sesión ⏻</button>
+        </form>
+    </div>
+
+    {% if alumno %}
+    <div class="card {{ estado }}"> 
+        {% if alumno.foto %}
+        <img src="{{ alumno.foto.url }}" alt="Foto Alumno" class="profile-pic">
+        {% else %}
+        <div class="profile-placeholder">
+            <i class="fas fa-user"></i>
+        </div>
+        {% endif %}
+
+        <div class="student-name">{{ alumno.nombre }} {{ alumno.apellido }}</div>
+
+        <div class="message-text {% if estado == 'exito' %}text-success{% else %}text-danger{% endif %}">
+            {{ mensaje }}
+        </div>
+
+        {% if pago %}
+        <div style="font-size: 0.9rem; color: #ccc; margin-bottom: 10px;">
+            Vence: <span style="color: white; font-weight: bold;">{{ pago.fecha_vencimiento|date:"d M Y" }}</span>
+        </div>
+
+        <div class="badges-container">
+            {% for disciplina in pago.disciplinas.all %}
+            <span class="badge">{{ disciplina.nombre }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <a href="{% url 'registro_asistencia' %}" class="btn-main btn-secondary"
+            style="text-decoration: none; display: block; width: fit-content; margin: 20px auto 0 auto; padding-left: 40px; padding-right: 40px;">
+            Escanear Siguiente
+        </a>
+    </div>
+
+    {% else %}
+
+    <div class="card">
+        <img src="{% static 'img/logo.png' %}" alt="Logo MCombat" class="logo-img">
+        <h2>REGISTRO MCOMBAT</h2>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div
+            style="background: rgba(231, 76, 60, 0.2); padding: 10px; border-radius: 10px; margin-bottom: 15px; color: #e74c3c; border: 1px solid #e74c3c;">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="dni" placeholder="Ingresa tu DNI" autofocus required autocomplete="off">
+            <button type="submit" class="btn-main">MARCAR ASISTENCIA</button>
+        </form>
+
+        <a href="{% url 'exportar_excel' %}" class="btn-excel">
+            📊 Descargar Reporte
+        </a>
+    </div>
+
+    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. Capturamos los datos que nos mandó Django
+            const estado = "{{ estado|default:'' }}";   // 'exito' o 'error'
+            const nombre = "{{ alumno.nombre|default:'' }}";
+
+            // Función para que la computadora hable
+            function hablar(texto) {
+                if ('speechSynthesis' in window) {
+                    // Cancelamos cualquier voz anterior para que no se crucen
+                    window.speechSynthesis.cancel();
+
+                    const locucion = new SpeechSynthesisUtterance(texto);
+                    locucion.lang = 'es-ES'; // Español
+                    locucion.rate = 1.1;     // Un poquito más rápido para que sea fluido
+                    locucion.pitch = 1.0;    // Tono normal
+                    window.speechSynthesis.speak(locucion);
+                }
+            }
+
+            // 2. Lógica de Sonidos (Efectos)
+            if (estado === 'exito') {
+                // --- CASO: ALUMNO AL DÍA ---
+                
+                // Sonido: Un "Ding" suave y positivo
+                const audioOk = new Audio('https://cdn.freesound.org/previews/535/535840_1669235-lq.mp3');
+                audioOk.volume = 0.4; // No muy fuerte
+                audioOk.play().catch(e => console.log("Audio bloqueado por navegador"));
+
+                // Voz: Saludo cordial
+                setTimeout(() => {
+                    hablar(`Acceso correcto. Bienvenido, ${nombre}.`);
+                }, 600); // Esperamos medio segundo que suene el Ding
+
+            } else if (estado === 'error') {
+                // --- CASO: MOROSO O DNI INCORRECTO ---
+                
+                // Sonido: Un "Error" tecnológico
+                const audioError = new Audio('https://cdn.freesound.org/previews/142/142608_2577666-lq.mp3');
+                audioError.volume = 0.5;
+                audioError.play().catch(e => console.log("Audio bloqueado por navegador"));
+
+                // Voz: Aviso formal para el staff
+                setTimeout(() => {
+                    hablar(`Atención. La membresía de ${nombre} ha vencido.`);
+                }, 800);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    
+    <h1 class="mb-4">📊 Panel de Estadísticas MCombat</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">Total Alumnos</div>
+                <div class="card-body">
+                    <h2 class="card-title">{{ total_alumnos }}</h2>
+                    <p class="card-text">Luchadores activos</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">Entrenaron Hoy</div>
+                <div class="card-body">
+                    <h2 class="card-title">{{ asistencias_hoy }}</h2>
+                    <p class="card-text">Asistencias registradas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-header">Ingresos (Este Mes)</div>
+                <div class="card-body">
+                    <h2 class="card-title">S/. {{ ingresos_mes }}</h2>
+                    <p class="card-text">Recaudación total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark text-white">
+        <div class="card-header">
+            Tendencia de Asistencia (Últimos 7 días)
+        </div>
+        <div class="card-body">
+            <canvas id="asistenciaChart" height="100"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('asistenciaChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }}, 
+            datasets: [{
+                label: 'Alumnos por día',
+                data: {{ chart_data|safe }},
+                backgroundColor: 'rgba(229, 9, 20, 0.6)',
+                borderColor: 'rgba(229, 9, 20, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#444' } },
+                x: { grid: { color: '#444' } }
+            },
+            plugins: { legend: { labels: { color: 'white' } } }
+        }
+    });
+</script>
+{% endblock %}
