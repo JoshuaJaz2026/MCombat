@@ -118,8 +118,6 @@ JAZZMIN_SETTINGS = {
         {"name": "📊 Ver Estadísticas", "url": "/admin/dashboard/", "new_window": False},
         {"model": "auth.User"},
     ],
-    
-    # "custom_css": "css/admin_fix.css", # Ya no es necesario el parche CSS
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -157,5 +155,16 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- CONFIGURACIÓN DE CORREOS (Modo Pruebas) ---
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# --- CONFIGURACIÓN DE CORREO (GMAIL / RENDER) ---
+# Usamos SMTP para enviar correos reales usando las variables de Render
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Leemos el usuario y la clave desde las variables de entorno (Environment Variables)
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'mcombatsoporte@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+
+# Configuración del remitente para que se vea profesional
+DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
