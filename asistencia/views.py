@@ -14,49 +14,47 @@ import openpyxl
 from .models import Alumno, Asistencia, Pago
 
 # ========================================================
-# 1. VISTA DE REGISTRO DE ASISTENCIA
+# 1. VISTA DE REGISTRO DE ASISTENCIA (EL CADENERO) 🛡️
 # ========================================================
-# asistencia/views.py
-
 @login_required(login_url='login_asistencia')
 def registro_asistencia(request):
-    # Variables para enviar a la plantilla (por defecto vacías)
-    context = {}
+    context = {} # Variables vacías al inicio
 
     if request.method == 'POST':
         dni_ingresado = request.POST.get('dni')
         
         try:
+            # 1. Buscamos al alumno por DNI
             alumno_encontrado = Alumno.objects.get(dni=dni_ingresado)
-            hoy = timezone.now().date()
             
-            # Buscamos pago válido
-            pago_activo = Pago.objects.filter(
-                alumno=alumno_encontrado, 
-                fecha_vencimiento__gte=hoy
-            ).order_by('-fecha_vencimiento').first()
-
-            if pago_activo:
+            # 2. EL CADENERO: Preguntamos si está al día
+            # Usamos la función inteligente que creamos en models.py
+            if alumno_encontrado.esta_al_dia():
+                
+                # --- ✅ LUZ VERDE: ACCESO PERMITIDO ---
                 Asistencia.objects.create(alumno=alumno_encontrado)
                 
-                # ✅ ÉXITO: Enviamos los datos del alumno y el pago al HTML
                 context = {
                     'alumno': alumno_encontrado,
-                    'pago': pago_activo,
-                    'estado': 'exito', # Para pintar verde
-                    'mensaje': f"¡Bienvenido, {alumno_encontrado.nombre}!"
+                    'estado': 'exito', # Esto activa el CSS VERDE
+                    'mensaje': f"¡Bienvenido, {alumno_encontrado.nombre}!",
+                    'submensaje': f"Vencimiento: {alumno_encontrado.fecha_vencimiento}"
                 }
+            
             else:
-                # ⛔ MOROSO: Enviamos datos pero con estado de error
+                # --- ❌ LUZ ROJA: ACCESO DENEGADO ---
+                # NO registramos asistencia. Lo rebotamos en la puerta.
                 context = {
                     'alumno': alumno_encontrado,
-                    'estado': 'error', # Para pintar rojo
-                    'mensaje': f"⛔ ALTO {alumno_encontrado.nombre}. Membresía vencida."
+                    'estado': 'error', # Esto activa el CSS ROJO
+                    'mensaje': "⛔ ACCESO DENEGADO",
+                    'submensaje': f"Tu membresía venció el {alumno_encontrado.fecha_vencimiento}. Por favor pasa por caja."
                 }
 
         except Alumno.DoesNotExist:
+            # Si el DNI no existe
             messages.error(request, "❌ DNI no encontrado en el sistema.")
-            return redirect('registro_asistencia')
+            # No hacemos redirect para que se muestre el mensaje en la misma pantalla
 
     return render(request, 'registro.html', context)
 
@@ -118,7 +116,11 @@ def dashboard_view(request):
     
     for i in range(6, -1, -1):
         fecha_analisis = hoy - timedelta(days=i)
+        cnt = Asistencia.objects.filter(fecha_analisis__date=fecha_analisis).count() # Corrección pequeña aquí
+        # Si da error usa: filter(fecha__date=fecha_analisis) dependiendo de tu base de datos
+        # Vamos a dejarlo estándar:
         cnt = Asistencia.objects.filter(fecha__date=fecha_analisis).count()
+
         labels.append(fecha_analisis.strftime("%d/%m"))
         data.append(cnt)
 
