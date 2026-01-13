@@ -76,7 +76,7 @@
         .logo-img {
             width: 100px;
             margin-bottom: 20px;
-            border-radius: 50%;
+            border-radius: 50%; /* Opcional: si quieres el logo redondo */
         }
 
         h2 {
@@ -275,7 +275,8 @@
     {% else %}
 
     <div class="card">
-        <div style="font-size: 3rem; margin-bottom: 10px;">🥊</div> 
+        <img src="{% static 'img/logo.png' %}" alt="Logo MCombat" class="logo-img">
+        
         <h2>REGISTRO MCOMBAT</h2>
 
         {% if messages %}
@@ -370,7 +371,7 @@
                 // Habla después del Buzzer
                 setTimeout(() => {
                     hablar(`Atención. Acceso denegado a ${nombre}.`);
-                }, 600); 
+                }, 600);
             }
         });
     </script>
