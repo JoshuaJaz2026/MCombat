@@ -253,12 +253,12 @@
         <div class="message-text {% if estado == 'exito' %}text-success{% else %}text-danger{% endif %}">
             {{ mensaje }}
         </div>
-
-        {% if pago %}
+        
         <div style="font-size: 0.9rem; color: #ccc; margin-bottom: 10px;">
-            Vence: <span style="color: white; font-weight: bold;">{{ pago.fecha_vencimiento|date:"d M Y" }}</span>
+            {{ submensaje }}
         </div>
 
+        {% if estado == 'exito' and pago %}
         <div class="badges-container">
             {% for disciplina in pago.disciplinas.all %}
             <span class="badge">{{ disciplina.nombre }}</span>
@@ -275,7 +275,7 @@
     {% else %}
 
     <div class="card">
-        <img src="{% static 'img/logo.png' %}" alt="Logo MCombat" class="logo-img">
+        <div style="font-size: 3rem; margin-bottom: 10px;">🥊</div> 
         <h2>REGISTRO MCOMBAT</h2>
 
         {% if messages %}
@@ -302,54 +302,78 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // 1. Capturamos los datos que nos mandó Django
-            const estado = "{{ estado|default:'' }}";   // 'exito' o 'error'
+            // 1. Capturamos los datos
+            const estado = "{{ estado|default:'' }}"; 
             const nombre = "{{ alumno.nombre|default:'' }}";
 
-            // Función para que la computadora hable
+            // --- FUNCIÓN 1: SONIDOS GENERADOS (SIN MP3 EXTERNOS) ---
+            function sonar(tipo) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                osc.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                if (tipo === 'exito') {
+                    // SONIDO "DING-DONG" FUTURISTA 🎵
+                    osc.type = 'sine'; 
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // Re
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1); // La
+                    
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.5);
+
+                } else if (tipo === 'error') {
+                    // SONIDO "BUZZER" DE ERROR 🚫
+                    osc.type = 'sawtooth'; // Sonido áspero
+                    osc.frequency.setValueAtTime(150, ctx.currentTime); 
+                    osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.3);
+                    
+                    gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                }
+            }
+
+            // --- FUNCIÓN 2: VOZ DE JARVIS (TTS) ---
             function hablar(texto) {
                 if ('speechSynthesis' in window) {
-                    // Cancelamos cualquier voz anterior para que no se crucen
-                    window.speechSynthesis.cancel();
-
+                    window.speechSynthesis.cancel(); // Cancelar voz anterior
                     const locucion = new SpeechSynthesisUtterance(texto);
-                    locucion.lang = 'es-ES'; // Español
-                    locucion.rate = 1.1;     // Un poquito más rápido para que sea fluido
-                    locucion.pitch = 1.0;    // Tono normal
+                    locucion.lang = 'es-ES';
+                    locucion.rate = 1.1; 
                     window.speechSynthesis.speak(locucion);
                 }
             }
 
-            // 2. Lógica de Sonidos (Efectos)
+            // --- EJECUCIÓN ---
             if (estado === 'exito') {
-                // --- CASO: ALUMNO AL DÍA ---
+                sonar('exito'); // Suena el Ding generado
                 
-                // Sonido: Un "Ding" suave y positivo
-                const audioOk = new Audio('https://cdn.freesound.org/previews/535/535840_1669235-lq.mp3');
-                audioOk.volume = 0.4; // No muy fuerte
-                audioOk.play().catch(e => console.log("Audio bloqueado por navegador"));
-
-                // Voz: Saludo cordial
+                // Habla después del Ding
                 setTimeout(() => {
                     hablar(`Acceso correcto. Bienvenido, ${nombre}.`);
-                }, 600); // Esperamos medio segundo que suene el Ding
+                }, 600);
 
             } else if (estado === 'error') {
-                // --- CASO: MOROSO O DNI INCORRECTO ---
+                sonar('error'); // Suena el Buzzer generado
                 
-                // Sonido: Un "Error" tecnológico
-                const audioError = new Audio('https://cdn.freesound.org/previews/142/142608_2577666-lq.mp3');
-                audioError.volume = 0.5;
-                audioError.play().catch(e => console.log("Audio bloqueado por navegador"));
-
-                // Voz: Aviso formal para el staff
+                // Habla después del Buzzer
                 setTimeout(() => {
-                    hablar(`Atención. La membresía de ${nombre} ha vencido.`);
-                }, 800);
+                    hablar(`Atención. Acceso denegado a ${nombre}.`);
+                }, 600);
             }
         });
     </script>
 
 </body>
-
 </html>
