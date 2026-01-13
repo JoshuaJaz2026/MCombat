@@ -1,37 +1,35 @@
 from django.contrib import admin
-from django.utils import timezone
+from django.utils.html import format_html # <--- Importante para los colores
 from .models import Alumno, Asistencia, Pago, Disciplina
 
 # 1. Configuración para Alumnos
 class AlumnoAdmin(admin.ModelAdmin):
-    # Agregamos 'ver_disciplinas_activas' a la lista
-    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'telefono', 'ver_disciplinas_activas')
-    search_fields = ('nombre', 'apellido', 'dni')
-
-    # --- FUNCIÓN ESPÍA: Busca qué entrena el alumno HOY ---
-    def ver_disciplinas_activas(self, obj):
-        hoy = timezone.now().date()
-        
-        # Buscamos el último pago VÁLIDO (que no haya vencido)
-        pago_activo = Pago.objects.filter(
-            alumno=obj, 
-            fecha_vencimiento__gte=hoy
-        ).order_by('-fecha_vencimiento').first()
-
-        if pago_activo:
-            # Si tiene pago, sacamos la lista de sus deportes
-            deportes = [d.nombre for d in pago_activo.disciplinas.all()]
-            return ", ".join(deportes) # Los une con comas (Ej: "Boxeo, Pesas")
-        else:
-            return "⛔ Sin Membresía" # Si no pagó o venció
+    # Agregamos 'fecha_vencimiento' y el semáforo 'estado_pago'
+    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'fecha_vencimiento', 'estado_pago')
     
-    ver_disciplinas_activas.short_description = "Entrena (Activo)"
+    # --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
+    # Esto hace que el NOMBRE tenga enlace azul y puedas hacer clic para editar
+    list_display_links = ('vista_foto', 'nombre') 
+    # ---------------------------------
+
+    search_fields = ('nombre', 'apellido', 'dni')
+    list_filter = ('fecha_vencimiento',) # Filtro lateral para ver quiénes vencen pronto
+
+    # --- SEMÁFORO VISUAL (El Cadenero) ---
+    def estado_pago(self, obj):
+        # Usamos la función inteligente que creamos en models.py
+        if obj.esta_al_dia():
+            return format_html('<span style="color: green; font-weight: bold;">✅ Al día</span>')
+        return format_html('<span style="color: red; font-weight: bold;">❌ Vencido</span>')
+    
+    estado_pago.short_description = "Estado Membresía"
 
 # 2. Configuración para Pagos
 class PagoAdmin(admin.ModelAdmin):
     list_display = ('alumno', 'monto', 'fecha_pago', 'fecha_vencimiento', 'mostrar_disciplinas')
     list_filter = ('fecha_pago', 'disciplinas') 
     search_fields = ('alumno__nombre', 'alumno__apellido', 'alumno__dni')
+    autocomplete_fields = ['alumno'] # Buscador rápido (muy útil cuando tengas 100 alumnos)
     
     filter_horizontal = ('disciplinas',) 
 
@@ -39,8 +37,7 @@ class PagoAdmin(admin.ModelAdmin):
         return ", ".join([d.nombre for d in obj.disciplinas.all()])
     mostrar_disciplinas.short_description = "Deportes Pagados"
 
-    # --- AQUÍ ESTÁ LA SOLUCIÓN ---
-    # Esto inyecta el CSS de corrección solo en la pantalla de Pagos
+    # Mantenemos tu parche CSS para que las cajas se vean bien
     class Media:
         css = {
             'all': ('asistencia/parche_cajas.css',)
