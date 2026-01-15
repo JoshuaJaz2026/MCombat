@@ -99,7 +99,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-# NOTA: Se eliminó STATICFILES_STORAGE de aquí porque ahora va en STORAGES (abajo)
 
 # --- ARCHIVOS MEDIA (Fotos de Alumnos) ---
 MEDIA_URL = '/media/'
@@ -113,6 +112,12 @@ CLOUDINARY_STORAGE = {
     'API_KEY': '593388572931544',
     'API_SECRET': '-HEo5xEFlawCAxuLwQNLkDa8sWs',
 }
+
+# ==========================================
+# 🚑 PARCHE DE COMPATIBILIDAD (Esencial para evitar error en Render)
+# ==========================================
+# Aunque usemos STORAGES, esta línea evita que django-cloudinary-storage falle
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ==========================================
 # ⚙️ CONFIGURACIÓN MODERNA (DJANGO 5+)
