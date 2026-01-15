@@ -19,15 +19,19 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
-    'theme',          # <--- Mantiene tu login con video (debe ir primero)
-    'jazzmin',        # <--- Jazzmin para el diseño admin
+    # --- CLOUDINARY (FOTOS EN LA NUBE) ---
+    'cloudinary_storage',  # <--- NUEVO: Para guardar archivos
+    'cloudinary',          # <--- NUEVO: La librería base
+    # -------------------------------------
+    'theme',              # Mantiene tu login con video
+    'jazzmin',            # Jazzmin para el diseño admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'asistencia',     # Tu aplicación principal
+    'asistencia',         # Tu aplicación principal
 ]
 
 MIDDLEWARE = [
@@ -96,6 +100,19 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# ==========================================
+# ☁️ CONFIGURACIÓN DE CLOUDINARY (FOTOS)
+# ==========================================
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dpl7zq9si', 
+    'API_KEY': '593388572931544',
+    'API_SECRET': '-HEo5xEFlawCAxuLwQNLkDa8sWs',
+}
+
+# Le decimos a Django que use Cloudinary para guardar las fotos
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
@@ -156,15 +173,10 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # --- CONFIGURACIÓN DE CORREO (GMAIL / RENDER) ---
-# Usamos SMTP para enviar correos reales usando las variables de Render
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
-# Leemos el usuario y la clave desde las variables de entorno (Environment Variables)
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'mcombatsoporte@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-
-# Configuración del remitente para que se vea profesional
 DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
