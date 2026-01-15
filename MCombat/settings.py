@@ -99,7 +99,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# NOTA: Se eliminó STATICFILES_STORAGE de aquí porque ahora va en STORAGES (abajo)
 
 # --- ARCHIVOS MEDIA (Fotos de Alumnos) ---
 MEDIA_URL = '/media/'
@@ -114,8 +114,19 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': '-HEo5xEFlawCAxuLwQNLkDa8sWs',
 }
 
-# Le decimos a Django que use Cloudinary para guardar las fotos
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# ==========================================
+# ⚙️ CONFIGURACIÓN MODERNA (DJANGO 5+)
+# ==========================================
+STORAGES = {
+    # 1. Para archivos subidos (Fotos de alumnos) -> Cloudinary
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    # 2. Para archivos del sistema (CSS, JS) -> WhiteNoise
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -184,4 +195,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'mcombatsoporte@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>' 
+DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
