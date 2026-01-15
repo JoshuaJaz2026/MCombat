@@ -105,12 +105,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # ==========================================
-# ☁️ CONFIGURACIÓN DE CLOUDINARY
+# ☁️ CONFIGURACIÓN DE CLOUDINARY (CORREGIDA)
 # ==========================================
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dpl7zq9si', 
     'API_KEY': '593388572931544',
-    'API_SECRET': '-HEo5xEFlawCAxuLwQNLkDa8sWs',
+    'API_SECRET': '-HEo5xEFIaWCAxuLwQNLeDa8sWs',
 }
 
 # ==========================================
