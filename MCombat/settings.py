@@ -114,9 +114,9 @@ CLOUDINARY_STORAGE = {
 }
 
 # ==========================================
-# 🚑 PARCHE DE COMPATIBILIDAD (Esencial para evitar error en Render)
+# 🚑 PARCHE DE COMPATIBILIDAD
 # ==========================================
-# Aunque usemos STORAGES, esta línea evita que django-cloudinary-storage falle
+# Evita que django-cloudinary-storage falle al buscar STATICFILES_STORAGE
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ==========================================
@@ -132,6 +132,12 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+# ==========================================
+# 🚑 SOLUCIÓN ERROR WHITENOISE (MISSING MAP)
+# ==========================================
+# Esta línea es la clave para que ignore el archivo bootstrap.min.js.map que falta
+WHITENOISE_MANIFEST_STRICT = False
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -200,4 +206,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'mcombatsoporte@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>' 
+DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
