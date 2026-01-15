@@ -114,10 +114,11 @@ CLOUDINARY_STORAGE = {
 }
 
 # ==========================================
-# 🚑 PARCHE DE COMPATIBILIDAD (CAMBIADO A MODO SEGURO)
+# 🚑 PARCHE DE COMPATIBILIDAD
 # ==========================================
-# Usamos 'CompressedStaticFilesStorage' (Sin Manifest) para que NO falle si faltan mapas
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# Volvemos al almacenamiento ESTÁNDAR de Django.
+# Esto evita que intente comprimir archivos que no encuentra.
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # ==========================================
 # ⚙️ CONFIGURACIÓN MODERNA (DJANGO 5+)
@@ -127,9 +128,9 @@ STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
-    # 2. Archivos del sistema -> WhiteNoise (Modo Seguro)
+    # 2. Archivos del sistema -> Estándar (Sin compresión propensa a fallos)
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
