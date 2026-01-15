@@ -17,6 +17,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# --- NUEVO: LISTA DE CONFIANZA PARA LOGIN (SOLUCIÓN ERROR 403) ---
+CSRF_TRUSTED_ORIGINS = [
+    'https://mcombat.onrender.com',
+]
+
 # Application definition
 INSTALLED_APPS = [
     # --- CLOUDINARY (FOTOS EN LA NUBE) ---
