@@ -21,8 +21,7 @@ class Alumno(models.Model):
     # Campo de Foto
     foto = models.ImageField(upload_to='fotos_alumnos/', null=True, blank=True, verbose_name="Foto del Alumno")
 
-    # --- NUEVO: CAMPO CRÍTICO PARA EL CADENERO ---
-    # Aquí se guardará hasta cuándo tiene permitido entrar
+    # --- CAMPO CRÍTICO PARA EL CADENERO ---
     fecha_vencimiento = models.DateField(null=True, blank=True, verbose_name="Vencimiento Membresía")
 
     def __str__(self):
@@ -38,7 +37,7 @@ class Alumno(models.Model):
     def esta_al_dia(self):
         """Retorna True si la fecha de vencimiento es hoy o futura."""
         if not self.fecha_vencimiento:
-            return False # Si nunca ha pagado, no pasa
+            return False 
         return self.fecha_vencimiento >= timezone.now().date()
 
 class Asistencia(models.Model):
@@ -52,19 +51,27 @@ class Pago(models.Model):
     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
     disciplinas = models.ManyToManyField(Disciplina, verbose_name="Disciplinas Inscritas")
     monto = models.DecimalField(max_digits=10, decimal_places=2, default=100.00)
-    fecha_pago = models.DateField(auto_now_add=True)
+    
+    # --- CAMBIO AQUÍ: Ahora es editable y por defecto pone "hoy" ---
+    fecha_pago = models.DateField(default=timezone.now, verbose_name="Fecha de Pago")
+    
     fecha_vencimiento = models.DateField(blank=True, null=True) 
     
     def save(self, *args, **kwargs):
-        # 1. Si no ponen fecha, calculamos 30 días automáticamente
+        # 1. Si no ponen fecha de vencimiento, calculamos 30 días automáticamente
         if not self.fecha_vencimiento:
-            self.fecha_vencimiento = timezone.now().date() + timedelta(days=30)
+            # Usamos la fecha_pago real para calcular el vencimiento
+            fecha_base = self.fecha_pago if self.fecha_pago else timezone.now().date()
+            # Ojo: timezone.now devuelve datetime, nos aseguramos de usar date() si es necesario
+            if isinstance(fecha_base, models.DateTimeField): 
+                 fecha_base = fecha_base.date()
+            
+            self.fecha_vencimiento = fecha_base + timedelta(days=30)
         
         # 2. Guardamos el Pago
         super().save(*args, **kwargs)
 
-        # 3. --- TRUCO DE MAGIA ---
-        # Actualizamos automáticamente al Alumno con esta nueva fecha
+        # 3. Actualizamos al Alumno
         self.alumno.fecha_vencimiento = self.fecha_vencimiento
         self.alumno.save()
 
