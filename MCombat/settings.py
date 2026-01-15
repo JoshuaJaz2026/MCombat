@@ -17,26 +17,26 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# --- NUEVO: LISTA DE CONFIANZA PARA LOGIN (SOLUCIÓN ERROR 403) ---
+# --- LISTA DE CONFIANZA PARA LOGIN ---
 CSRF_TRUSTED_ORIGINS = [
     'https://mcombat.onrender.com',
 ]
 
 # Application definition
 INSTALLED_APPS = [
-    # --- CLOUDINARY (FOTOS EN LA NUBE) ---
-    'cloudinary_storage',  # <--- NUEVO: Para guardar archivos
-    'cloudinary',          # <--- NUEVO: La librería base
-    # -------------------------------------
-    'theme',              # Mantiene tu login con video
-    'jazzmin',            # Jazzmin para el diseño admin
+    # --- CLOUDINARY ---
+    'cloudinary_storage',
+    'cloudinary',
+    # ------------------
+    'theme',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'asistencia',         # Tu aplicación principal
+    'asistencia',
 ]
 
 MIDDLEWARE = [
@@ -70,7 +70,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MCombat.wsgi.application'
 
 
-# --- BASE DE DATOS (NEON / POSTGRESQL) ---
+# --- BASE DE DATOS ---
 DATABASES = {
     'default': dj_database_url.config(
         default='postgresql://neondb_owner:npg_oK1Ied5hVkCR@ep-dark-queen-a4weiv5e-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
@@ -95,17 +95,17 @@ USE_I18N = True
 USE_TZ = True
 
 
-# --- ARCHIVOS ESTÁTICOS (CSS, JS, Imágenes del sistema) ---
+# --- ARCHIVOS ESTÁTICOS ---
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# --- ARCHIVOS MEDIA (Fotos de Alumnos) ---
+# --- ARCHIVOS MEDIA ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # ==========================================
-# ☁️ CONFIGURACIÓN DE CLOUDINARY (FOTOS)
+# ☁️ CONFIGURACIÓN DE CLOUDINARY
 # ==========================================
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dpl7zq9si', 
@@ -114,37 +114,30 @@ CLOUDINARY_STORAGE = {
 }
 
 # ==========================================
-# 🚑 PARCHE DE COMPATIBILIDAD
+# 🚑 PARCHE DE COMPATIBILIDAD (CAMBIADO A MODO SEGURO)
 # ==========================================
-# Evita que django-cloudinary-storage falle al buscar STATICFILES_STORAGE
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Usamos 'CompressedStaticFilesStorage' (Sin Manifest) para que NO falle si faltan mapas
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # ==========================================
 # ⚙️ CONFIGURACIÓN MODERNA (DJANGO 5+)
 # ==========================================
 STORAGES = {
-    # 1. Para archivos subidos (Fotos de alumnos) -> Cloudinary
+    # 1. Archivos subidos -> Cloudinary
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
-    # 2. Para archivos del sistema (CSS, JS) -> WhiteNoise
+    # 2. Archivos del sistema -> WhiteNoise (Modo Seguro)
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
-
-# ==========================================
-# 🚑 SOLUCIÓN ERROR WHITENOISE (MISSING MAP)
-# ==========================================
-# Esta línea es la clave para que ignore el archivo bootstrap.min.js.map que falta
-WHITENOISE_MANIFEST_STRICT = False
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ==========================================
-# CONFIGURACIÓN DE JAZZMIN (Tema y UI)
+# CONFIGURACIÓN DE JAZZMIN
 # ==========================================
 
 JAZZMIN_SETTINGS = {
@@ -156,7 +149,6 @@ JAZZMIN_SETTINGS = {
     "search_model": "asistencia.Alumno",
     "show_ui_builder": True,
 
-    # --- BOTONES DEL MENÚ SUPERIOR ---
     "topmenu_links": [
         {"name": "Inicio",  "url": "admin:index", "permissions": ["auth.view_user"]},
         {"name": "📊 Ver Estadísticas", "url": "/admin/dashboard/", "new_window": False},
@@ -185,9 +177,8 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
     
-    # --- CAMBIO A TEMA CLARO (FLATLY) ---
-    "theme": "flatly",        # Tema blanco moderno
-    "dark_mode_theme": None,  # Desactivamos modo oscuro automático
+    "theme": "flatly",
+    "dark_mode_theme": None,
     
     "button_classes": {
         "primary": "btn-primary",
@@ -199,7 +190,7 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- CONFIGURACIÓN DE CORREO (GMAIL / RENDER) ---
+# --- CORREO ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
