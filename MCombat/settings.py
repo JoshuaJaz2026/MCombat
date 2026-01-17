@@ -197,11 +197,13 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 30
 
-# TU CORREO DE LOGIN EN BREVO
+# 1. TU USUARIO DE LOGIN EN BREVO (NO CAMBIAR)
+# Es la cuenta dueña del servicio SMTP
 EMAIL_HOST_USER = 'jabarcap.2004@gmail.com' 
 
-# 🔒 LA CLAVE AHORA ES UNA VARIABLE OCULTA (SEGURO PARA GITHUB)
-# GitHub ya no bloqueará esto porque no ve la clave real aquí.
+# 2. LA CLAVE SMTP (Se lee desde Render, seguro y oculto)
 EMAIL_HOST_PASSWORD = os.environ.get('BREVO_API_KEY')
 
-DEFAULT_FROM_EMAIL = 'Soporte MCombat <jabarcap.2004@gmail.com>'
+# 3. EL REMITENTE OFICIAL (CAMBIADO A MCOMBAT)
+# Ahora los correos saldrán a nombre de la academia
+DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
