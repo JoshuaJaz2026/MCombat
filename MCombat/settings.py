@@ -188,16 +188,20 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # ==========================================
-# 📧 CONFIGURACIÓN DE CORREO REAL (GMAIL)
+# 📧 CONFIGURACIÓN DE CORREO PROFESIONAL (BREVO)
 # ==========================================
-# Volvemos a SMTP para enviar correos reales
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_TIMEOUT = 30  # <--- NUEVO: Evita que se quede colgado para siempre
+EMAIL_TIMEOUT = 30
 
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'mcombatsoporte@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
+# TU CORREO DE LOGIN EN BREVO
+EMAIL_HOST_USER = 'jabarcap.2004@gmail.com' 
+
+# 🔒 LA CLAVE AHORA ES UNA VARIABLE OCULTA (SEGURO PARA GITHUB)
+# GitHub ya no bloqueará esto porque no ve la clave real aquí.
+EMAIL_HOST_PASSWORD = os.environ.get('BREVO_API_KEY')
+
+DEFAULT_FROM_EMAIL = 'Soporte MCombat <jabarcap.2004@gmail.com>'
