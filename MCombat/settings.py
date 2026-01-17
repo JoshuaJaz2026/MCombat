@@ -192,15 +192,16 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # ==========================================
-# 📧 CONFIGURACIÓN DE CORREO (PUERTO 465 SSL)
+# 📧 CONFIGURACIÓN DE CORREO (PUERTO 587 TLS)
 # ==========================================
+# Esta es la configuración estándar y más compatible para Gmail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 
-# Configuración Anti-Timeout (SSL en lugar de TLS)
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+# Usamos TLS (Transport Layer Security)
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'mcombatsoporte@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
