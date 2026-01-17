@@ -105,7 +105,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # ==========================================
-# ☁️ CONFIGURACIÓN DE CLOUDINARY (CORREGIDA)
+# ☁️ CONFIGURACIÓN DE CLOUDINARY
 # ==========================================
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dpl7zq9si', 
@@ -116,19 +116,15 @@ CLOUDINARY_STORAGE = {
 # ==========================================
 # 🚑 PARCHE DE COMPATIBILIDAD
 # ==========================================
-# Volvemos al almacenamiento ESTÁNDAR de Django.
-# Esto evita que intente comprimir archivos que no encuentra.
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # ==========================================
 # ⚙️ CONFIGURACIÓN MODERNA (DJANGO 5+)
 # ==========================================
 STORAGES = {
-    # 1. Archivos subidos -> Cloudinary
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
-    # 2. Archivos del sistema -> Estándar (Sin compresión propensa a fallos)
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
@@ -192,17 +188,9 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # ==========================================
-# 📧 CONFIGURACIÓN DE CORREO (PUERTO 587 TLS)
+# 📮 MODO EMERGENCIA: CORREO A CONSOLA (LOGS)
 # ==========================================
-# Esta es la configuración estándar y más compatible para Gmail
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-
-# Usamos TLS (Transport Layer Security)
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'mcombatsoporte@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+# Esto imprimirá el link de recuperación en los Logs de Render en lugar de enviarlo por Gmail.
+# Úsalo para recuperar tu cuenta AHORA.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
 DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
