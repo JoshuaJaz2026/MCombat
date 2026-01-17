@@ -206,4 +206,4 @@ EMAIL_HOST_PASSWORD = os.environ.get('BREVO_API_KEY')
 
 # 3. EL REMITENTE OFICIAL (CAMBIADO A MCOMBAT)
 # Ahora los correos saldrán a nombre de la academia
-DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Soporte MCombat <jabarcap.2004@gmail.com>'
