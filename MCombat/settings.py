@@ -199,11 +199,11 @@ EMAIL_TIMEOUT = 30
 
 # 1. TU USUARIO DE LOGIN EN BREVO (NO CAMBIAR)
 # Es la cuenta dueña del servicio SMTP
-EMAIL_HOST_USER = 'jabarcap.2004@gmail.com' 
+EMAIL_HOST_USER = 'EMAIL_USER' 
 
 # 2. LA CLAVE SMTP (Se lee desde Render, seguro y oculto)
 EMAIL_HOST_PASSWORD = os.environ.get('BREVO_API_KEY')
 
 # 3. EL REMITENTE OFICIAL (CAMBIADO A MCOMBAT)
 # Ahora los correos saldrán a nombre de la academia
-DEFAULT_FROM_EMAIL = 'Soporte MCombat <jabarcap.2004@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
