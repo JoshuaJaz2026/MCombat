@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import logout as django_logout  # Importante para cerrar sesión
+from django.contrib.auth import logout as django_logout
 from django.db.models import Sum, Count
 from datetime import timedelta
 import json
@@ -13,7 +13,7 @@ import openpyxl
 from .models import Alumno, Asistencia, Pago
 
 # ========================================================
-# 1. SEMÁFORO INTELIGENTE (NUEVO)
+# 1. SEMÁFORO INTELIGENTE
 # ========================================================
 @login_required
 def smart_login_redirect(request):
@@ -26,24 +26,25 @@ def smart_login_redirect(request):
         return redirect('dashboard')  # Redirige al nombre de la url 'dashboard'
 
 # ========================================================
-# 2. LOGIN Y LOGOUT (LO QUE FALTABA)
+# 2. LOGIN Y LOGOUT (RUTAS CORREGIDAS)
 # ========================================================
 def login_asistencia(request):
     # Si ya está logueado, lo mandamos al semáforo
     if request.user.is_authenticated:
         return redirect('smart_redirect')
-    # Si no, mostramos el login
-    return render(request, 'asistencia/login.html')
+    
+    # --- CORRECCIÓN: Tu archivo real se llama 'login_asistencia.html' ---
+    return render(request, 'login_asistencia.html')
 
 def logout(request):
     django_logout(request)
     return redirect('login_asistencia')
 
 # ========================================================
-# 3. DASHBOARD (TU CÓDIGO PRO + CORRECCIÓN DE NOMBRE)
+# 3. DASHBOARD
 # ========================================================
 @staff_member_required
-def dashboard(request):  # RENOMBRADO de dashboard_view a dashboard para coincidir con urls.py
+def dashboard(request):
     # A. TARJETAS
     total_alumnos = Alumno.objects.count()
     hoy = timezone.now().date()
@@ -72,10 +73,11 @@ def dashboard(request):  # RENOMBRADO de dashboard_view a dashboard para coincid
         'chart_data': json.dumps(data),
     }
     
-    return render(request, 'asistencia/dashboard.html', context) # Asegura la ruta de plantilla correcta
+    # --- CORRECCIÓN: Tu archivo está dentro de la carpeta 'admin' ---
+    return render(request, 'admin/dashboard.html', context)
 
 # ========================================================
-# 4. REGISTRO DE ASISTENCIA (EL CADENERO)
+# 4. REGISTRO DE ASISTENCIA
 # ========================================================
 @login_required(login_url='login_asistencia')
 def registro_asistencia(request):
@@ -107,13 +109,14 @@ def registro_asistencia(request):
         except Alumno.DoesNotExist:
             messages.error(request, "❌ DNI no encontrado en el sistema.")
 
-    return render(request, 'asistencia/registro.html', context)
+    # --- CORRECCIÓN: Tu archivo 'registro.html' está suelto en la carpeta templates ---
+    return render(request, 'registro.html', context)
 
 # ========================================================
 # 5. EXPORTAR EXCEL
 # ========================================================
 @login_required(login_url='login_asistencia')
-def exportar_excel(request): # RENOMBRADO para coincidir con urls.py
+def exportar_excel(request):
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
     worksheet.title = 'Alumnos MCombat'
