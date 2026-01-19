@@ -207,14 +207,15 @@ EMAIL_HOST_PASSWORD = brevo_key.strip()
 # 3. REMITENTE
 DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
 
-# ==========================================
-# 🧭 REDIRECCIONES DE LOGIN (INTELIGENTE)
-# ==========================================
+# ========================================================
+# 🧭 REDIRECCIONES DE LOGIN (AJUSTE FINAL)
+# ========================================================
 
-# 1. Página de Login
+# 1. Página de Login Oficial
 LOGIN_URL = '/login/'
 
-# 2. AL ENTRAR: Usamos la ruta inteligente
+# 2. DESTINO AL ENTRAR: ¡AQUÍ ESTÁ LA CLAVE! 🔑
+# En lugar de mandar a '/admin/dashboard/', mandamos al semáforo
 LOGIN_REDIRECT_URL = 'smart_redirect' 
 
 # 3. Después de Logout
