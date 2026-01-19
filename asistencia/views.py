@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout as django_logout
-from django.db.models import Sum, Count
+from django.db.models import Sum
 from datetime import timedelta
 import json
 import openpyxl
@@ -13,39 +13,28 @@ import openpyxl
 from .models import Alumno, Asistencia, Pago
 
 # ========================================================
-# 1. SEMÁFORO INTELIGENTE
+# 1. SEMÁFORO INTELIGENTE (Detecta si es Jefe o Staff)
 # ========================================================
 @login_required
 def smart_login_redirect(request):
-    """
-    Decide a dónde enviar al usuario según su rol.
-    """
     if request.user.is_superuser:
         return redirect('/admin/')
     else:
-        return redirect('dashboard')  # Redirige al nombre de la url 'dashboard'
+        return redirect('dashboard')
 
 # ========================================================
-# 2. LOGIN Y LOGOUT (RUTAS CORREGIDAS)
+# 2. LOGOUT (Cerrar Sesión)
 # ========================================================
-def login_asistencia(request):
-    # Si ya está logueado, lo mandamos al semáforo
-    if request.user.is_authenticated:
-        return redirect('smart_redirect')
-    
-    # --- CORRECCIÓN: Tu archivo real se llama 'login_asistencia.html' ---
-    return render(request, 'login_asistencia.html')
-
 def logout(request):
     django_logout(request)
-    return redirect('login_asistencia')
+    return redirect('login_asistencia') 
 
 # ========================================================
-# 3. DASHBOARD
+# 3. DASHBOARD (Zona Staff)
 # ========================================================
 @staff_member_required
 def dashboard(request):
-    # A. TARJETAS
+    # A. TARJETAS DE DATOS
     total_alumnos = Alumno.objects.count()
     hoy = timezone.now().date()
     asistencias_hoy = Asistencia.objects.filter(fecha__date=hoy).count()
@@ -55,10 +44,9 @@ def dashboard(request):
     if ingresos_mes is None:
         ingresos_mes = 0
 
-    # B. GRÁFICO
+    # B. GRÁFICO DE BARRAS
     labels = []
     data = []
-    
     for i in range(6, -1, -1):
         fecha_analisis = hoy - timedelta(days=i)
         cnt = Asistencia.objects.filter(fecha__date=fecha_analisis).count()
@@ -73,11 +61,11 @@ def dashboard(request):
         'chart_data': json.dumps(data),
     }
     
-    # --- CORRECCIÓN: Tu archivo está dentro de la carpeta 'admin' ---
+    # Renderiza la plantilla que está en la carpeta admin
     return render(request, 'admin/dashboard.html', context)
 
 # ========================================================
-# 4. REGISTRO DE ASISTENCIA
+# 4. REGISTRO DE ASISTENCIA (Para el Profesor)
 # ========================================================
 @login_required(login_url='login_asistencia')
 def registro_asistencia(request):
@@ -103,13 +91,13 @@ def registro_asistencia(request):
                     'alumno': alumno_encontrado,
                     'estado': 'error',
                     'mensaje': "⛔ ACCESO DENEGADO",
-                    'submensaje': f"Tu membresía venció el {alumno_encontrado.fecha_vencimiento}. Por favor pasa por caja."
+                    'submensaje': f"Membresía vencida el {alumno_encontrado.fecha_vencimiento}"
                 }
 
         except Alumno.DoesNotExist:
-            messages.error(request, "❌ DNI no encontrado en el sistema.")
+            messages.error(request, "❌ DNI no encontrado.")
 
-    # --- CORRECCIÓN: Tu archivo 'registro.html' está suelto en la carpeta templates ---
+    # Renderiza la plantilla que está suelta en templates
     return render(request, 'registro.html', context)
 
 # ========================================================
