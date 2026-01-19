@@ -7,9 +7,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
-# Importamos las vistas de la app asistencia
+# Importamos las vistas
 from asistencia import views
 from asistencia.views import smart_login_redirect
+
+# --- IMPORTANTE: Importamos el filtro de correo que creaste ---
+from asistencia.forms import ValidarCorreoResetForm 
 
 urlpatterns = [
     # --- 1. ADMIN DE DJANGO ---
@@ -18,8 +21,7 @@ urlpatterns = [
     # --- 2. RUTA INTELIGENTE (SEMÁFORO) ---
     path('smart-redirect/', smart_login_redirect, name='smart_redirect'),
 
-    # --- 3. LOGIN OFICIAL (EL ARREGLO) ---
-    # Usamos el sistema de Django pero con TU plantilla 'login_asistencia.html'
+    # --- 3. LOGIN OFICIAL ---
     path('login/', auth_views.LoginView.as_view(
             template_name='login_asistencia.html', 
             redirect_authenticated_user=True
@@ -31,11 +33,16 @@ urlpatterns = [
     path('', views.registro_asistencia, name='registro_asistencia'),
     path('exportar-excel/', views.exportar_excel, name='exportar_excel'),
 
-    # --- 5. RECUPERACIÓN DE CONTRASEÑA ---
-    path('reset_password/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    # --- 5. RECUPERACIÓN DE CONTRASEÑA (CON VALIDACIÓN) ---
+    path('reset_password/', 
+         auth_views.PasswordResetView.as_view(
+             form_class=ValidarCorreoResetForm  # <--- AQUÍ ACTIVAMOS EL FILTRO
+         ), 
+         name='password_reset'),
+
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     
-    # Al terminar de cambiar la clave, te manda al Login Universal
+    # Al terminar, manda al login
     path('reset/<uidb64>/<token>/', 
          auth_views.PasswordResetConfirmView.as_view(success_url='/login/'), 
          name='password_reset_confirm'),
