@@ -214,8 +214,7 @@ DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
 # 1. Página de Login
 LOGIN_URL = '/login/'
 
-# 2. AL ENTRAR: Usamos la ruta inteligente (el nombre que pusimos en urls.py)
-# Django irá aquí -> La vista decidirá si es Jefe o Staff -> Y redirigirá
+# 2. AL ENTRAR: Usamos la ruta inteligente
 LOGIN_REDIRECT_URL = 'smart_redirect' 
 
 # 3. Después de Logout
