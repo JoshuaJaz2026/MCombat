@@ -12,7 +12,7 @@ from asistencia import views
 from asistencia.views import smart_login_redirect
 
 urlpatterns = [
-    # --- 1. ADMIN DE DJANGO (IMPORTANTE) ---
+    # --- 1. ADMIN DE DJANGO ---
     path('admin/', admin.site.urls),
 
     # --- 2. RUTA INTELIGENTE (SEMÁFORO) ---
@@ -25,10 +25,17 @@ urlpatterns = [
     path('', views.registro_asistencia, name='registro_asistencia'), # Página de inicio
     path('exportar-excel/', views.exportar_excel, name='exportar_excel'),
 
-    # --- 4. RECUPERACIÓN DE CONTRASEÑA (BREVO) ---
+    # --- 4. RECUPERACIÓN DE CONTRASEÑA (CONFIGURADA) ---
     path('reset_password/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    
+    # === AQUÍ ESTÁ EL CAMBIO CLAVE ===
+    # Agregamos success_url='/login/' para que al terminar, vaya al login general.
+    path('reset/<uidb64>/<token>/', 
+         auth_views.PasswordResetConfirmView.as_view(success_url='/login/'), 
+         name='password_reset_confirm'),
+    
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
 
