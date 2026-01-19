@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Entrenadores - MCombat</title>
+    <title>Acceso al Sistema - MCombat</title>
     <style>
         /* --- ESTILOS GENERALES --- */
         body {
@@ -47,6 +47,7 @@
             text-transform: uppercase; 
             letter-spacing: 2px; 
             font-weight: 700;
+            font-size: 1.5rem; /* Ajuste ligero de tamaño */
         }
 
         p { color: #aaa; margin-bottom: 30px; font-size: 0.9rem; }
@@ -106,15 +107,15 @@
 <body>
 
     <div class="card">
-        <h2>Zona Staff</h2>
-        <p>Inicia sesión para registrar asistencia</p>
+        <h2>ACCESO AL SISTEMA</h2>
+        <p>Bienvenido a MCombat</p>
 
         <form method="POST">
             {% csrf_token %}
             <input type="text" name="username" placeholder="Usuario" required autofocus>
             <input type="password" name="password" placeholder="Contraseña" required>
             
-            <button type="submit">INGRESAR AL SISTEMA</button>
+            <button type="submit">INGRESAR</button>
             
             <a href="{% url 'password_reset' %}" class="forgot-link">
                 ¿Olvidaste tu contraseña?
