@@ -192,19 +192,17 @@ JAZZMIN_UI_TWEAKS = {
 # ==========================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 2525
+EMAIL_PORT = 2525  # MANTÉN ESTE PUERTO (Es el que funcionó)
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 30
 
-# 1. TU USUARIO (CORREGIDO: Ahora usa os.environ.get)
-# Antes tenías 'EMAIL_USER' (texto), ahora lee la variable real: jabarcap.2004@gmail.com
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
+# 1. TU USUARIO (ESCRIBELO DIRECTO ENTRE COMILLAS)
+# Así aseguramos que no haya error de variables.
+EMAIL_HOST_USER = 'jabarcap.2004@gmail.com'
 
-# 2. LA CLAVE SMTP (Correcto: Usa la de Brevo xsmtp...)
+# 2. LA CLAVE (Esta SÍ la leemos de Render por seguridad)
 EMAIL_HOST_PASSWORD = os.environ.get('BREVO_API_KEY')
 
-# 3. EL REMITENTE OFICIAL
-# Recuerda: Esto solo funciona si verificaste mcombatsoporte en Brevo.
-# Si falla, vuelve a poner tu correo personal aquí temporalmente.
+# 3. EL REMITENTE
 DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
