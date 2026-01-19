@@ -33,3 +33,15 @@ urlpatterns = [
 # --- BLOQUE MÁGICO PARA VER LAS FOTOS (Modo Debug) ---
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # MCombat/urls.py
+
+# 1. Asegúrate de importar la vista nueva arriba
+from asistencia.views import smart_login_redirect 
+
+urlpatterns = [
+    # ... tus otras rutas ...
+    
+    # 2. Agrega esta ruta especial
+    path('smart-redirect/', smart_login_redirect, name='smart_redirect'),
+]

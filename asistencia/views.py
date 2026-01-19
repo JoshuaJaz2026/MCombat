@@ -109,3 +109,17 @@ def dashboard_view(request):
     }
     
     return render(request, 'admin/dashboard.html', context)
+# asistencia/views.py
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
+# Esta vista funciona como un "Semáforo"
+@login_required
+def smart_login_redirect(request):
+    # Si es Superusuario (Dueño), lo mandamos al Admin Panel (Jazzmin)
+    if request.user.is_superuser:
+        return redirect('/admin/')
+    
+    # Para todos los demás (Staff/Alumnos), los mandamos a su Dashboard
+    else:
+        return redirect('/admin/dashboard/')

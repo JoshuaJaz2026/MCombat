@@ -3,7 +3,7 @@ python manage.py runserver
 
 -------------------------------
 PARA COLOCAR EN VENV
-.\venv\Scripts\activate
+.\.venv\Scripts\activate
 
 -------------------------------
 PANEL DE REGISTRO

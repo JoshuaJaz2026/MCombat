@@ -208,14 +208,15 @@ EMAIL_HOST_PASSWORD = brevo_key.strip()
 DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
 
 # ==========================================
-# 🧭 REDIRECCIONES DE LOGIN (MAPA DE NAVEGACIÓN)
+# 🧭 REDIRECCIONES DE LOGIN (INTELIGENTE)
 # ==========================================
 
 # 1. Página de Login
 LOGIN_URL = '/login/'
 
-# 2. Después de Login -> Ir al Dashboard
-LOGIN_REDIRECT_URL = '/admin/dashboard/'
+# 2. AL ENTRAR: Usamos la ruta inteligente (el nombre que pusimos en urls.py)
+# Django irá aquí -> La vista decidirá si es Jefe o Staff -> Y redirigirá
+LOGIN_REDIRECT_URL = 'smart_redirect' 
 
-# 3. Después de Logout -> Ir al Login
+# 3. Después de Logout
 LOGOUT_REDIRECT_URL = '/login/'
