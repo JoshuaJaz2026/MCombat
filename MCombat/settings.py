@@ -190,8 +190,6 @@ JAZZMIN_UI_TWEAKS = {
 # ==========================================
 # 📧 CONFIGURACIÓN DE CORREO (FINAL)
 # ==========================================
-import os
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 2525  # Mantenemos 2525 que ya vimos que no tiene bloqueo
@@ -200,7 +198,7 @@ EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 30
 
 # 1. USUARIO SMTP (EL CÓDIGO ESPECIAL DE BREVO)
-# ¡Este era el error! No es tu gmail, es este código:
+# ¡Este es el que funcionó!
 EMAIL_HOST_USER = 'a04a45001@smtp-brevo.com'
 
 # 2. CONTRASEÑA (La clave API que ya tienes en Render)
@@ -210,3 +208,13 @@ EMAIL_HOST_PASSWORD = brevo_key.strip()
 
 # 3. REMITENTE (Esto es lo que ven los alumnos)
 DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
+
+# ==========================================
+# 🧭 REDIRECCIONES DE LOGIN (MAPA DE NAVEGACIÓN)
+# ==========================================
+
+# 1. ¿Dónde está tu página de Login? (Para evitar error 404 buscando /accounts/login/)
+LOGIN_URL = '/login/'
+
+# 2. ¿A dónde ir después de iniciar sesión correctamente?
+LOGIN_REDIRECT_URL =
