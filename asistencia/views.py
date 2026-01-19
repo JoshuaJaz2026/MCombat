@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import logout as django_logout  # Importante para cerrar sesión
 from django.db.models import Sum, Count
 from datetime import timedelta
 import json
@@ -12,7 +13,69 @@ import openpyxl
 from .models import Alumno, Asistencia, Pago
 
 # ========================================================
-# 1. REGISTRO DE ASISTENCIA (EL CADENERO)
+# 1. SEMÁFORO INTELIGENTE (NUEVO)
+# ========================================================
+@login_required
+def smart_login_redirect(request):
+    """
+    Decide a dónde enviar al usuario según su rol.
+    """
+    if request.user.is_superuser:
+        return redirect('/admin/')
+    else:
+        return redirect('dashboard')  # Redirige al nombre de la url 'dashboard'
+
+# ========================================================
+# 2. LOGIN Y LOGOUT (LO QUE FALTABA)
+# ========================================================
+def login_asistencia(request):
+    # Si ya está logueado, lo mandamos al semáforo
+    if request.user.is_authenticated:
+        return redirect('smart_redirect')
+    # Si no, mostramos el login
+    return render(request, 'asistencia/login.html')
+
+def logout(request):
+    django_logout(request)
+    return redirect('login_asistencia')
+
+# ========================================================
+# 3. DASHBOARD (TU CÓDIGO PRO + CORRECCIÓN DE NOMBRE)
+# ========================================================
+@staff_member_required
+def dashboard(request):  # RENOMBRADO de dashboard_view a dashboard para coincidir con urls.py
+    # A. TARJETAS
+    total_alumnos = Alumno.objects.count()
+    hoy = timezone.now().date()
+    asistencias_hoy = Asistencia.objects.filter(fecha__date=hoy).count()
+    
+    mes_actual = hoy.month
+    ingresos_mes = Pago.objects.filter(fecha_pago__month=mes_actual).aggregate(Sum('monto'))['monto__sum']
+    if ingresos_mes is None:
+        ingresos_mes = 0
+
+    # B. GRÁFICO
+    labels = []
+    data = []
+    
+    for i in range(6, -1, -1):
+        fecha_analisis = hoy - timedelta(days=i)
+        cnt = Asistencia.objects.filter(fecha__date=fecha_analisis).count()
+        labels.append(fecha_analisis.strftime("%d/%m"))
+        data.append(cnt)
+
+    context = {
+        'total_alumnos': total_alumnos,
+        'asistencias_hoy': asistencias_hoy,
+        'ingresos_mes': ingresos_mes,
+        'chart_labels': json.dumps(labels),
+        'chart_data': json.dumps(data),
+    }
+    
+    return render(request, 'asistencia/dashboard.html', context) # Asegura la ruta de plantilla correcta
+
+# ========================================================
+# 4. REGISTRO DE ASISTENCIA (EL CADENERO)
 # ========================================================
 @login_required(login_url='login_asistencia')
 def registro_asistencia(request):
@@ -44,13 +107,13 @@ def registro_asistencia(request):
         except Alumno.DoesNotExist:
             messages.error(request, "❌ DNI no encontrado en el sistema.")
 
-    return render(request, 'registro.html', context)
+    return render(request, 'asistencia/registro.html', context)
 
 # ========================================================
-# 2. EXPORTAR EXCEL
+# 5. EXPORTAR EXCEL
 # ========================================================
 @login_required(login_url='login_asistencia')
-def exportar_alumnos_excel(request):
+def exportar_excel(request): # RENOMBRADO para coincidir con urls.py
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
     worksheet.title = 'Alumnos MCombat'
@@ -70,56 +133,3 @@ def exportar_alumnos_excel(request):
     response['Content-Disposition'] = 'attachment; filename="reporte_alumnos.xlsx"'
     workbook.save(response)
     return response
-
-# ========================================================
-# 3. DASHBOARD (CORREGIDO)
-# ========================================================
-@staff_member_required
-def dashboard_view(request):
-    # A. TARJETAS
-    total_alumnos = Alumno.objects.count()
-    hoy = timezone.now().date()
-    asistencias_hoy = Asistencia.objects.filter(fecha__date=hoy).count()
-    
-    mes_actual = hoy.month
-    ingresos_mes = Pago.objects.filter(fecha_pago__month=mes_actual).aggregate(Sum('monto'))['monto__sum']
-    if ingresos_mes is None:
-        ingresos_mes = 0
-
-    # B. GRÁFICO (Aquí estaba el error)
-    labels = []
-    data = []
-    
-    for i in range(6, -1, -1):
-        fecha_analisis = hoy - timedelta(days=i)
-        
-        # --- CORRECCIÓN ---
-        # Buscamos en el campo 'fecha' (que es el de la BD), comparándolo con la variable 'fecha_analisis'
-        cnt = Asistencia.objects.filter(fecha__date=fecha_analisis).count()
-
-        labels.append(fecha_analisis.strftime("%d/%m"))
-        data.append(cnt)
-
-    context = {
-        'total_alumnos': total_alumnos,
-        'asistencias_hoy': asistencias_hoy,
-        'ingresos_mes': ingresos_mes,
-        'chart_labels': json.dumps(labels),
-        'chart_data': json.dumps(data),
-    }
-    
-    return render(request, 'admin/dashboard.html', context)
-# asistencia/views.py
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
-
-# Esta vista funciona como un "Semáforo"
-@login_required
-def smart_login_redirect(request):
-    # Si es Superusuario (Dueño), lo mandamos al Admin Panel (Jazzmin)
-    if request.user.is_superuser:
-        return redirect('/admin/')
-    
-    # Para todos los demás (Staff/Alumnos), los mandamos a su Dashboard
-    else:
-        return redirect('/admin/dashboard/')
