@@ -1,8 +1,43 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe # <--- CAMBIO AQUÍ: Usamos mark_safe
+from django.contrib.auth.admin import UserAdmin  # <--- IMPORTANTE PARA USUARIOS
+from django.contrib.auth.models import User      # <--- IMPORTANTE PARA USUARIOS
+from django.utils.safestring import mark_safe 
 from .models import Alumno, Asistencia, Pago, Disciplina
 
-# 1. Configuración para Alumnos
+# ================================================================
+# 1. PERSONALIZACIÓN DE USUARIOS (NUEVO: Para ver Roles)
+# ================================================================
+
+# Primero: "Des-registramos" el admin de usuarios por defecto
+try:
+    admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
+
+# Segundo: Registramos nuestro admin personalizado con la columna ROL
+@admin.register(User)
+class CustomUserAdmin(UserAdmin):
+    # Agregamos 'ver_rol' a las columnas visibles
+    list_display = ('username', 'email', 'first_name', 'last_name', 'ver_rol', 'is_active')
+    
+    # Filtros laterales
+    list_filter = ('is_superuser', 'is_staff', 'is_active')
+
+    # --- LÓGICA DE LA COLUMNA DE ROLES ---
+    @admin.display(description='ROL DEL SISTEMA')
+    def ver_rol(self, obj):
+        if obj.is_superuser:
+            # Color Rojo y Corona para el Jefe
+            return mark_safe('<span style="color: #d9534f; font-weight: bold; font-size: 1.1em;">👑 ADMINISTRADOR</span>')
+        elif obj.is_staff:
+            # Color Azul y Guante para el Staff
+            return mark_safe('<span style="color: #0275d8; font-weight: bold;">🥊 STAFF</span>')
+        else:
+            return mark_safe('<span style="color: #777;">👤 USUARIO</span>')
+
+# ================================================================
+# 2. CONFIGURACIÓN DE ALUMNOS (Tu código original)
+# ================================================================
 class AlumnoAdmin(admin.ModelAdmin):
     # Qué columnas ver
     list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'fecha_vencimiento', 'estado_pago')
@@ -13,16 +48,17 @@ class AlumnoAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'apellido', 'dni')
     list_filter = ('fecha_vencimiento',)
 
-    # --- SEMÁFORO VISUAL (Corregido con mark_safe) ---
+    # --- SEMÁFORO VISUAL ---
     def estado_pago(self, obj):
         if obj.esta_al_dia():
-            # mark_safe funciona perfecto para HTML fijo sin variables extrañas
             return mark_safe('<span style="color: green; font-weight: bold;">✅ Al día</span>')
         return mark_safe('<span style="color: red; font-weight: bold;">❌ Vencido</span>')
     
     estado_pago.short_description = "Estado Membresía"
 
-# 2. Configuración para Pagos
+# ================================================================
+# 3. CONFIGURACIÓN DE PAGOS (Tu código original)
+# ================================================================
 class PagoAdmin(admin.ModelAdmin):
     list_display = ('alumno', 'monto', 'fecha_pago', 'fecha_vencimiento', 'mostrar_disciplinas')
     list_filter = ('fecha_pago', 'disciplinas') 
@@ -40,7 +76,9 @@ class PagoAdmin(admin.ModelAdmin):
             'all': ('asistencia/parche_cajas.css',)
         }
 
-# 3. Registramos todo
+# ================================================================
+# 4. REGISTRO DE MODELOS
+# ================================================================
 admin.site.register(Alumno, AlumnoAdmin)
 admin.site.register(Asistencia)
 admin.site.register(Pago, PagoAdmin)
