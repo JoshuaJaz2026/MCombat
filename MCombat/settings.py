@@ -188,21 +188,25 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # ==========================================
-# 📧 CONFIGURACIÓN DE CORREO PROFESIONAL (BREVO)
+# 📧 CONFIGURACIÓN DE CORREO (FINAL)
 # ==========================================
+import os
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 2525  # MANTÉN ESTE PUERTO (Es el que funcionó)
+EMAIL_PORT = 2525  # Mantenemos 2525 que ya vimos que no tiene bloqueo
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 30
 
-# 1. TU USUARIO (ESCRIBELO DIRECTO ENTRE COMILLAS)
-# Así aseguramos que no haya error de variables.
-EMAIL_HOST_USER = 'jabarcap.2004@gmail.com'
+# 1. USUARIO SMTP (EL CÓDIGO ESPECIAL DE BREVO)
+# ¡Este era el error! No es tu gmail, es este código:
+EMAIL_HOST_USER = 'a04a45001@smtp-brevo.com'
 
-# 2. LA CLAVE (Esta SÍ la leemos de Render por seguridad)
-EMAIL_HOST_PASSWORD = os.environ.get('BREVO_API_KEY')
+# 2. CONTRASEÑA (La clave API que ya tienes en Render)
+# Usamos .strip() por seguridad para limpiar espacios invisibles
+brevo_key = os.environ.get('BREVO_API_KEY', '')
+EMAIL_HOST_PASSWORD = brevo_key.strip()
 
-# 3. EL REMITENTE
+# 3. REMITENTE (Esto es lo que ven los alumnos)
 DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
