@@ -219,4 +219,4 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'smart_redirect' 
 
 # 3. Después de Logout
-LOGOUT_REDIRECT_URL = '/login/'
+#LOGOUT_REDIRECT_URL = '/login/'
