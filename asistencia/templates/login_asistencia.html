@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso al Sistema - MCombat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <style>
         /* --- ESTILOS GENERALES --- */
         body {
             margin: 0;
             height: 100vh;
-            /* Cargamos tu imagen de fondo original */
             background: url("{% static 'img/video/FONDO_LOGIN.JPG' %}") no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', sans-serif;
@@ -20,42 +20,41 @@
             color: white;
         }
 
-        /* --- CAPA OSCURA (Para que se lea bien sobre la foto) --- */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* Oscurece un poco la foto de fondo */
+            background: rgba(0, 0, 0, 0.5);
             z-index: -1;
         }
 
         .card {
-            background: rgba(15, 15, 15, 0.85); /* Fondo semitransparente oscuro */
+            background: rgba(15, 15, 15, 0.85);
             padding: 40px;
             border-radius: 15px;
             width: 100%;
             max-width: 320px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px); /* Efecto vidrio borroso */
+            backdrop-filter: blur(5px);
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
         }
 
         h2 { 
             margin-bottom: 5px; 
-            color: #e50914; /* Rojo MCombat */
+            color: #e50914;
             text-transform: uppercase; 
             letter-spacing: 2px; 
             font-weight: 700;
-            font-size: 1.5rem; /* Ajuste ligero de tamaño */
+            font-size: 1.5rem;
         }
 
         p { color: #aaa; margin-bottom: 30px; font-size: 0.9rem; }
         
+        /* Estilos generales para los inputs */
         input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid #444;
             border-radius: 5px;
@@ -64,10 +63,41 @@
             transition: 0.3s;
         }
 
+        /* Mantenemos el margen inferior para el input de usuario */
+        input[name="username"] {
+            margin-bottom: 15px;
+        }
+
         input:focus {
             outline: none;
             border-color: #e50914;
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- NUEVOS ESTILOS PARA EL OJITO --- */
+        .password-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .password-container input {
+            padding-right: 40px; /* Espacio para que el texto no se encime al ícono */
+            margin-bottom: 0; /* El margen lo maneja el contenedor */
+        }
+
+        #togglePassword {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            z-index: 2;
+        }
+        
+        #togglePassword:hover {
+            color: white;
         }
 
         button {
@@ -89,7 +119,6 @@
             box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
         }
 
-        /* --- ESTILO DEL LINK DE RECUPERACIÓN --- */
         .forgot-link {
             display: inline-block;
             margin-top: 20px;
@@ -113,7 +142,11 @@
         <form method="POST">
             {% csrf_token %}
             <input type="text" name="username" placeholder="Usuario" required autofocus>
-            <input type="password" name="password" placeholder="Contraseña" required>
+            
+            <div class="password-container">
+                <input type="password" name="password" placeholder="Contraseña" required id="id_password">
+                <i class="far fa-eye" id="togglePassword"></i>
+            </div>
             
             <button type="submit">INGRESAR</button>
             
@@ -128,6 +161,20 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#id_password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // Cambia el tipo de input entre 'password' y 'text'
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            // Cambia el ícono (ojo abierto / ojo tachado)
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
 
 </body>
 </html>
