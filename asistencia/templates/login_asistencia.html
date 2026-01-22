@@ -5,12 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso al Sistema - MCombat</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+
     <style>
-        /* --- ESTILOS GENERALES --- */
+        /* =========================================
+           ESTILOS COMPLETOS (Restaurados)
+           ========================================= */
         body {
             margin: 0;
             height: 100vh;
+            /* Usamos la etiqueta static aquí mismo para asegurar que cargue la imagen */
             background: url("{% static 'img/video/FONDO_LOGIN.JPG' %}") no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', sans-serif;
@@ -20,6 +25,7 @@
             color: white;
         }
 
+        /* Capa oscura sobre el fondo para que se lean las letras */
         body::before {
             content: "";
             position: absolute;
@@ -42,16 +48,20 @@
 
         h2 { 
             margin-bottom: 5px; 
-            color: #e50914;
+            color: #e50914; /* Rojo MCombat */
             text-transform: uppercase; 
             letter-spacing: 2px; 
             font-weight: 700;
             font-size: 1.5rem;
         }
 
-        p { color: #aaa; margin-bottom: 30px; font-size: 0.9rem; }
+        p { 
+            color: #aaa; 
+            margin-bottom: 30px; 
+            font-size: 0.9rem; 
+        }
         
-        /* Estilos generales para los inputs */
+        /* Estilos de las cajas de texto */
         input {
             width: 100%;
             padding: 12px;
@@ -63,7 +73,7 @@
             transition: 0.3s;
         }
 
-        /* Mantenemos el margen inferior para el input de usuario */
+        /* Margen solo para el usuario, porque el password usa un contenedor especial */
         input[name="username"] {
             margin-bottom: 15px;
         }
@@ -74,7 +84,7 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* --- NUEVOS ESTILOS PARA EL OJITO --- */
+        /* --- AQUÍ ESTÁ LA MAGIA DEL OJITO --- */
         .password-container {
             position: relative;
             width: 100%;
@@ -82,8 +92,8 @@
         }
 
         .password-container input {
-            padding-right: 40px; /* Espacio para que el texto no se encime al ícono */
-            margin-bottom: 0; /* El margen lo maneja el contenedor */
+            padding-right: 40px; /* Espacio para que el texto no tape al ícono */
+            margin-bottom: 0;
         }
 
         #togglePassword {
@@ -100,6 +110,7 @@
             color: white;
         }
 
+        /* Botón de Ingresar */
         button {
             width: 100%;
             padding: 12px;
@@ -119,6 +130,7 @@
             box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
         }
 
+        /* Enlace de olvidaste contraseña */
         .forgot-link {
             display: inline-block;
             margin-top: 20px;
@@ -131,6 +143,20 @@
             color: white;
             text-decoration: underline;
         }
+
+        /* Mensaje de error (Rojo) */
+        .error-box {
+            background: rgba(229, 9, 20, 0.2); 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-top: 20px; 
+            border: 1px solid #e50914;
+        }
+        .error-text {
+            color: #ffcccc; 
+            margin: 0; 
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -141,6 +167,7 @@
 
         <form method="POST">
             {% csrf_token %}
+            
             <input type="text" name="username" placeholder="Usuario" required autofocus>
             
             <div class="password-container">
@@ -156,8 +183,8 @@
         </form>
         
         {% if form.errors %}
-            <div style="background: rgba(229, 9, 20, 0.2); padding: 10px; border-radius: 5px; margin-top: 20px; border: 1px solid #e50914;">
-                <p style="color: #ffcccc; margin: 0; font-size: 0.8rem;">Usuario o contraseña incorrectos</p>
+            <div class="error-box">
+                <p class="error-text">Usuario o contraseña incorrectos</p>
             </div>
         {% endif %}
     </div>
@@ -166,14 +193,18 @@
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#id_password');
 
-        togglePassword.addEventListener('click', function (e) {
-            // Cambia el tipo de input entre 'password' y 'text'
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            
-            // Cambia el ícono (ojo abierto / ojo tachado)
-            this.classList.toggle('fa-eye-slash');
-        });
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function (e) {
+                // 1. Averiguar si es password o texto
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                
+                // 2. Cambiar el atributo
+                password.setAttribute('type', type);
+                
+                // 3. Cambiar el ícono (ojo abierto / ojo tachado)
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
     </script>
 
 </body>
