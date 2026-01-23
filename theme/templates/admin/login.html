@@ -8,63 +8,76 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 
     <style>
-        /* --- ESTRUCTURA DE PANTALLA DIVIDIDA --- */
+        /* --- ESTRUCTURA GENERAL --- */
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
             font-family: 'Segoe UI', sans-serif;
-            display: flex; /* Esto activa la división */
+            display: flex; /* Activa la pantalla dividida */
             overflow: hidden;
-            background-color: #000;
+            background-color: #1a1b26; /* Color de fondo general */
         }
 
-        /* 1. COLUMNA IZQUIERDA (LOGIN) */
-        .login-section {
-            width: 400px; /* Ancho fijo para el panel de login */
-            background-color: #0f0f0f; /* Fondo casi negro */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 50px;
-            box-shadow: 5px 0 30px rgba(0,0,0,0.5); /* Sombra para separarlo del video */
-            z-index: 10; /* Para que quede encima del video si la pantalla es chica */
-            border-right: 1px solid #222;
-        }
-
-        /* 2. COLUMNA DERECHA (VIDEO) */
+        /* 1. SECCIÓN DE VIDEO (AHORA A LA IZQUIERDA) */
         .video-section {
-            flex: 1; /* Toma todo el espacio restante */
+            flex: 1; /* Ocupa todo el espacio sobrante */
             position: relative;
             background-color: #000;
+            overflow: hidden;
         }
 
         .video-bg {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Hace que el video llene el espacio sin deformarse */
-            opacity: 0.6; /* Un poco oscuro */
+            object-fit: cover;
+            opacity: 0.7;
         }
 
-        /* ESTILOS DEL FORMULARIO */
+        /* Capa oscura sobre el video para que no brille tanto */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.1), #1a1b26); /* Difuminado hacia el login */
+        }
+
+        /* 2. SECCIÓN DE LOGIN (AHORA A LA DERECHA) */
+        .login-section {
+            width: 450px; /* Ancho fijo */
+            background-color: #1e1e2e; /* Azul oscuro estilo Discord/VSCode */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 60px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            z-index: 10;
+            color: white;
+        }
+
+        /* ESTILOS DEL FORMULARIO (Basado en tu imagen) */
         h2 {
-            color: #e50914; /* Rojo MCombat */
-            text-transform: uppercase;
-            letter-spacing: 2px;
             font-size: 2rem;
             margin-bottom: 10px;
+            font-weight: 700;
+            color: #fff;
+            text-align: left;
         }
         
-        p { color: #888; margin-bottom: 40px; font-size: 1rem; }
+        /* Etiquetas "Usuario" y "Contraseña" */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a0a0b0;
+            font-size: 0.9rem;
+        }
 
-        label { display: none; } /* Ocultamos etiquetas viejas de Django */
-
+        /* Inputs (Cajas de texto oscuras) */
         input {
             width: 100%;
             padding: 15px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 5px;
+            background: #2b2d3e; /* Fondo gris/azulado oscuro */
+            border: 1px solid #3f4158;
+            border-radius: 8px;
             color: white;
             margin-bottom: 20px;
             box-sizing: border-box;
@@ -74,8 +87,8 @@
 
         input:focus {
             outline: none;
-            border-color: #e50914;
-            background: #252525;
+            border-color: #6c5ce7; /* Borde morado al escribir */
+            background: #32344a;
         }
 
         /* Contenedor Password + Ojo */
@@ -89,70 +102,73 @@
         
         #togglePassword {
             position: absolute;
-            top: 22px; /* Ajuste vertical */
+            top: 45px; /* Ajustado para quedar dentro del input */
             right: 15px;
-            color: #666; 
+            color: #888; 
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
-        #togglePassword:hover { color: #e50914; }
+        #togglePassword:hover { color: #fff; }
 
+        /* EL BOTÓN MORADO (Estilo de tu imagen) */
         button {
             width: 100%;
             padding: 15px;
-            background: #e50914;
+            background: #6c5ce7; /* MORADO INTENSO */
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-weight: bold;
-            text-transform: uppercase;
+            font-size: 1.1rem;
             cursor: pointer;
-            font-size: 1rem;
-            letter-spacing: 1px;
             transition: 0.3s;
             margin-top: 10px;
         }
         button:hover {
-            background: #ff0f1f;
-            box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+            background: #5641e5; /* Morado más oscuro al pasar mouse */
+            transform: translateY(-2px); /* Efecto de elevación */
         }
+
+        /* Link de olvidar contraseña */
+        .forgot-link {
+            text-align: center;
+            display: block;
+            margin-top: 25px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .forgot-link:hover { color: #bbb; }
 
         .error-msg {
-            color: #ffcccc;
-            background: rgba(229, 9, 20, 0.1);
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            border: 1px solid #e50914;
+            color: #ff6b6b;
             text-align: center;
-        }
-
-        /* Logo opcional (Texto MCombat) */
-        .logo-text {
-            font-weight: 900;
-            color: #fff;
-            font-size: 1.5rem;
-            margin-bottom: 50px;
-            opacity: 0.3;
+            margin-top: 15px;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="login-section">
-        <div class="logo-text">MCOMBAT ADMIN</div>
-        
-        <h2>Bienvenido</h2>
-        <p>Ingresa tus credenciales de administrador</p>
+    <div class="video-section">
+        <video class="video-bg" autoplay loop muted playsinline>
+            <source src="{% static 'video/pelea03.mp4' %}" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+    </div>
 
+    <div class="login-section">
+        <h2>Iniciar Sesión</h2>
+        
         <form action="{{ app_path }}" method="post" id="login-form">
             {% csrf_token %}
             
-            <input type="text" name="username" placeholder="Usuario" required autofocus>
+            <label>Usuario:</label>
+            <input type="text" name="username" placeholder="Ingresa tu usuario" required autofocus>
             
             <div class="password-container">
-                <input type="password" name="password" placeholder="Contraseña" required id="id_password">
+                <label>Contraseña:</label>
+                <input type="password" name="password" placeholder="••••••••" required id="id_password">
                 <i class="far fa-eye" id="togglePassword"></i>
             </div>
             
@@ -162,16 +178,12 @@
             
             {% if form.errors %}
                 <div class="error-msg">
-                    <i class="fas fa-exclamation-circle"></i> Acceso denegado.
+                    <i class="fas fa-times-circle"></i> Usuario o contraseña incorrectos
                 </div>
             {% endif %}
-        </form>
-    </div>
 
-    <div class="video-section">
-        <video class="video-bg" autoplay loop muted playsinline>
-            <source src="{% static 'video/pelea03.mp4' %}" type="video/mp4">
-        </video>
+            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        </form>
     </div>
 
     <script>
