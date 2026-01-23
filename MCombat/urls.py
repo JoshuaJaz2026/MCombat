@@ -10,31 +10,29 @@ from django.contrib.auth import views as auth_views
 # Importamos las vistas
 from asistencia import views
 from asistencia.views import smart_login_redirect
-
-# Filtro de correo
 from asistencia.forms import ValidarCorreoResetForm 
 
 urlpatterns = [
-    # --- 1. ADMIN DE DJANGO ---
+    # --- 1. RUTAS PERSONALIZADAS DEL ADMIN (¡VAN PRIMERO!) ---
+    # Deben ir antes de admin.site.urls para que Django no las confunda
+    path('admin/dashboard/', views.dashboard, name='dashboard'),
+    path('admin/exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
+
+    # --- 2. ADMIN OFICIAL DE DJANGO ---
     path('admin/', admin.site.urls),
 
-    # --- 2. RUTA INTELIGENTE (SEMÁFORO) ---
+    # --- 3. RUTA INTELIGENTE (SEMÁFORO) ---
     path('smart-redirect/', smart_login_redirect, name='smart_redirect'),
 
-    # --- 3. LOGIN OFICIAL ---
+    # --- 4. LOGIN ---
     path('login/', auth_views.LoginView.as_view(
             template_name='login_asistencia.html', 
             redirect_authenticated_user=True
         ), name='login_asistencia'),
 
-    # --- 4. TUS RUTAS DE LA APP (DASHBOARD Y REGISTRO) ---
-    path('admin/dashboard/', views.dashboard, name='dashboard'), # Esta arregla el error 404
+    # --- 5. OTRAS RUTAS ---
     path('logout/', views.logout, name='logout'), 
     path('', views.registro_asistencia, name='registro_asistencia'),
-
-    # --- 5. REPORTES EXCEL ---
-    # Esta es la ruta que usa el botón verde del Dashboard
-    path('admin/exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
 
     # --- 6. RECUPERACIÓN DE CONTRASEÑA ---
     path('reset_password/', 
