@@ -8,142 +8,148 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 
     <style>
-        /* --- ESTILOS VISUALES (Incrustados para seguridad) --- */
+        /* --- ESTRUCTURA DE PANTALLA DIVIDIDA --- */
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
             font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; /* Esto activa la división */
             overflow: hidden;
             background-color: #000;
         }
 
-        /* Video de fondo */
+        /* 1. COLUMNA IZQUIERDA (LOGIN) */
+        .login-section {
+            width: 400px; /* Ancho fijo para el panel de login */
+            background-color: #0f0f0f; /* Fondo casi negro */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 50px;
+            box-shadow: 5px 0 30px rgba(0,0,0,0.5); /* Sombra para separarlo del video */
+            z-index: 10; /* Para que quede encima del video si la pantalla es chica */
+            border-right: 1px solid #222;
+        }
+
+        /* 2. COLUMNA DERECHA (VIDEO) */
+        .video-section {
+            flex: 1; /* Toma todo el espacio restante */
+            position: relative;
+            background-color: #000;
+        }
+
         .video-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.6; /* Oscurecemos un poco para leer mejor */
-        }
-
-        /* Capa negra transparente */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-        }
-
-        /* Tarjeta del formulario */
-        .card {
-            background: rgba(15, 15, 15, 0.9);
-            padding: 40px;
-            border-radius: 10px;
-            text-align: center;
             width: 100%;
-            max-width: 350px;
-            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3); /* Resplandor rojo */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
+            height: 100%;
+            object-fit: cover; /* Hace que el video llene el espacio sin deformarse */
+            opacity: 0.6; /* Un poco oscuro */
         }
 
+        /* ESTILOS DEL FORMULARIO */
         h2 {
             color: #e50914; /* Rojo MCombat */
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 5px;
-            font-size: 1.8rem;
-            margin-top: 0;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
         
-        p { color: #ccc; margin-bottom: 25px; font-size: 0.9rem; }
+        p { color: #888; margin-bottom: 40px; font-size: 1rem; }
+
+        label { display: none; } /* Ocultamos etiquetas viejas de Django */
 
         input {
             width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #444;
-            border-radius: 4px;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 5px;
             color: white;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             box-sizing: border-box;
+            font-size: 1rem;
             transition: 0.3s;
         }
 
         input:focus {
             outline: none;
             border-color: #e50914;
-            background: rgba(255, 255, 255, 0.2);
+            background: #252525;
         }
 
-        /* Contenedor para el Password y el Ojo */
+        /* Contenedor Password + Ojo */
         .password-container {
             position: relative;
             width: 100%;
-            margin-bottom: 20px;
         }
         .password-container input { 
-            margin-bottom: 0; 
-            padding-right: 40px; /* Espacio para el ícono */
+            padding-right: 45px; 
         }
         
         #togglePassword {
             position: absolute;
-            top: 50%; right: 10px;
-            transform: translateY(-50%);
-            color: #aaa; 
+            top: 22px; /* Ajuste vertical */
+            right: 15px;
+            color: #666; 
             cursor: pointer;
-            z-index: 10;
+            font-size: 1.1rem;
         }
-        #togglePassword:hover { color: white; }
+        #togglePassword:hover { color: #e50914; }
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             background: #e50914;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
+            font-size: 1rem;
+            letter-spacing: 1px;
             transition: 0.3s;
+            margin-top: 10px;
         }
         button:hover {
             background: #ff0f1f;
-            box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
         }
 
         .error-msg {
             color: #ffcccc;
-            background: rgba(229, 9, 20, 0.2);
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 15px;
-            font-size: 0.85rem;
+            background: rgba(229, 9, 20, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 0.9rem;
             border: 1px solid #e50914;
+            text-align: center;
+        }
+
+        /* Logo opcional (Texto MCombat) */
+        .logo-text {
+            font-weight: 900;
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 50px;
+            opacity: 0.3;
         }
     </style>
 </head>
 <body>
 
-    <video class="video-bg" autoplay loop muted playsinline>
-        <source src="{% static 'video/pelea03.mp4' %}" type="video/mp4">
-    </video>
-    <div class="overlay"></div>
-
-    <div class="card">
-        <h2>ADMINISTRADOR</h2>
-        <p>Panel de Control MCombat</p>
+    <div class="login-section">
+        <div class="logo-text">MCOMBAT ADMIN</div>
+        
+        <h2>Bienvenido</h2>
+        <p>Ingresa tus credenciales de administrador</p>
 
         <form action="{{ app_path }}" method="post" id="login-form">
             {% csrf_token %}
             
-            <input type="text" name="username" placeholder="Usuario Admin" required autofocus>
+            <input type="text" name="username" placeholder="Usuario" required autofocus>
             
             <div class="password-container">
                 <input type="password" name="password" placeholder="Contraseña" required id="id_password">
@@ -152,14 +158,20 @@
             
             <input type="hidden" name="next" value="{{ next }}">
             
-            <button type="submit">ENTRAR AL SISTEMA</button>
+            <button type="submit">Iniciar Sesión</button>
             
             {% if form.errors %}
                 <div class="error-msg">
-                    Credenciales incorrectas. Intenta de nuevo.
+                    <i class="fas fa-exclamation-circle"></i> Acceso denegado.
                 </div>
             {% endif %}
         </form>
+    </div>
+
+    <div class="video-section">
+        <video class="video-bg" autoplay loop muted playsinline>
+            <source src="{% static 'video/pelea03.mp4' %}" type="video/mp4">
+        </video>
     </div>
 
     <script>
@@ -168,10 +180,8 @@
         
         if(togglePassword){
             togglePassword.addEventListener('click', function (e) {
-                // Cambiar tipo de input
                 const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
                 password.setAttribute('type', type);
-                // Cambiar icono
                 this.classList.toggle('fa-eye-slash');
             });
         }
