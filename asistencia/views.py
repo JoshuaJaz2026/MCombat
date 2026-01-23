@@ -7,6 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout as django_logout
 from django.db.models import Sum
 from datetime import timedelta
+from .models import Asistencia
 import json
 import openpyxl
 
@@ -123,4 +124,38 @@ def exportar_excel(request):
     )
     response['Content-Disposition'] = 'attachment; filename="reporte_alumnos.xlsx"'
     workbook.save(response)
+    return response
+
+def exportar_asistencias_excel(request):
+    # 1. Configurar el tipo de archivo (Excel)
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=Reporte_Asistencias_MCombat.xlsx'
+
+    # 2. Crear el libro de Excel y la hoja
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Asistencias"
+
+    # 3. Escribir los ENCABEZADOS (La primera fila)
+    # Puedes cambiar estos nombres según lo que quieras ver
+    columns = ['Fecha', 'Alumno/Usuario', 'Hora', 'Día']
+    ws.append(columns)
+
+    # 4. Obtener los datos de la Base de Datos
+    # Traemos todas las asistencias ordenadas por fecha (la más reciente primero)
+    rows = Asistencia.objects.all().order_by('-fecha', '-hora')
+
+    # 5. Escribir fila por fila
+    for row in rows:
+        # Aquí asumimos que tu modelo tiene campos 'fecha', 'usuario' y 'hora'.
+        # Si se llaman diferente, cámbialo aquí.
+        ws.append([
+            row.fecha,                 # Columna A
+            str(row.usuario),          # Columna B
+            row.hora,                  # Columna C
+            row.fecha.strftime("%A")   # Columna D (Día de la semana)
+        ])
+
+    # 6. Guardar y enviar
+    wb.save(response)
     return response
