@@ -10,12 +10,12 @@
 
     <style>
         /* =========================================
-           ESTILOS COMPLETOS (Restaurados)
+           ESTILOS COMPLETOS (Incrustados para seguridad)
            ========================================= */
         body {
             margin: 0;
             height: 100vh;
-            /* Usamos la etiqueta static aquí mismo para asegurar que cargue la imagen */
+            /* Fondo del Login */
             background: url("{% static 'img/video/FONDO_LOGIN.JPG' %}") no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', sans-serif;
@@ -25,7 +25,7 @@
             color: white;
         }
 
-        /* Capa oscura sobre el fondo para que se lean las letras */
+        /* Capa oscura */
         body::before {
             content: "";
             position: absolute;
@@ -55,13 +55,8 @@
             font-size: 1.5rem;
         }
 
-        p { 
-            color: #aaa; 
-            margin-bottom: 30px; 
-            font-size: 0.9rem; 
-        }
+        p { color: #aaa; margin-bottom: 30px; font-size: 0.9rem; }
         
-        /* Estilos de las cajas de texto */
         input {
             width: 100%;
             padding: 12px;
@@ -73,10 +68,7 @@
             transition: 0.3s;
         }
 
-        /* Margen solo para el usuario, porque el password usa un contenedor especial */
-        input[name="username"] {
-            margin-bottom: 15px;
-        }
+        input[name="username"] { margin-bottom: 15px; }
 
         input:focus {
             outline: none;
@@ -84,18 +76,16 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* --- AQUÍ ESTÁ LA MAGIA DEL OJITO --- */
+        /* Contenedor del Password y Ojo */
         .password-container {
             position: relative;
             width: 100%;
             margin-bottom: 15px;
         }
-
         .password-container input {
-            padding-right: 40px; /* Espacio para que el texto no tape al ícono */
+            padding-right: 40px;
             margin-bottom: 0;
         }
-
         #togglePassword {
             position: absolute;
             top: 50%;
@@ -105,12 +95,8 @@
             color: #888;
             z-index: 2;
         }
-        
-        #togglePassword:hover {
-            color: white;
-        }
+        #togglePassword:hover { color: white; }
 
-        /* Botón de Ingresar */
         button {
             width: 100%;
             padding: 12px;
@@ -130,7 +116,6 @@
             box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
         }
 
-        /* Enlace de olvidaste contraseña */
         .forgot-link {
             display: inline-block;
             margin-top: 20px;
@@ -139,24 +124,7 @@
             font-size: 0.85rem;
             transition: 0.3s;
         }
-        .forgot-link:hover {
-            color: white;
-            text-decoration: underline;
-        }
-
-        /* Mensaje de error (Rojo) */
-        .error-box {
-            background: rgba(229, 9, 20, 0.2); 
-            padding: 10px; 
-            border-radius: 5px; 
-            margin-top: 20px; 
-            border: 1px solid #e50914;
-        }
-        .error-text {
-            color: #ffcccc; 
-            margin: 0; 
-            font-size: 0.8rem;
-        }
+        .forgot-link:hover { color: white; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -167,7 +135,6 @@
 
         <form method="POST">
             {% csrf_token %}
-            
             <input type="text" name="username" placeholder="Usuario" required autofocus>
             
             <div class="password-container">
@@ -183,8 +150,8 @@
         </form>
         
         {% if form.errors %}
-            <div class="error-box">
-                <p class="error-text">Usuario o contraseña incorrectos</p>
+            <div style="background: rgba(229, 9, 20, 0.2); padding: 10px; border-radius: 5px; margin-top: 20px; border: 1px solid #e50914;">
+                <p style="color: #ffcccc; margin: 0; font-size: 0.8rem;">Usuario o contraseña incorrectos</p>
             </div>
         {% endif %}
     </div>
@@ -192,20 +159,13 @@
     <script>
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#id_password');
-
         if (togglePassword) {
             togglePassword.addEventListener('click', function (e) {
-                // 1. Averiguar si es password o texto
                 const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                
-                // 2. Cambiar el atributo
                 password.setAttribute('type', type);
-                
-                // 3. Cambiar el ícono (ojo abierto / ojo tachado)
                 this.classList.toggle('fa-eye-slash');
             });
         }
     </script>
-
 </body>
 </html>
