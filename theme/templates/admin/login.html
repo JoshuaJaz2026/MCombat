@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración MCombat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+
+    <style>
+        /* --- ESTILOS VISUALES (Incrustados para seguridad) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Video de fondo */
+        .video-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.6; /* Oscurecemos un poco para leer mejor */
+        }
+
+        /* Capa negra transparente */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        /* Tarjeta del formulario */
+        .card {
+            background: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3); /* Resplandor rojo */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        h2 {
+            color: #e50914; /* Rojo MCombat */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+            margin-top: 0;
+        }
+        
+        p { color: #ccc; margin-bottom: 25px; font-size: 0.9rem; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #e50914;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Contenedor para el Password y el Ojo */
+        .password-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .password-container input { 
+            margin-bottom: 0; 
+            padding-right: 40px; /* Espacio para el ícono */
+        }
+        
+        #togglePassword {
+            position: absolute;
+            top: 50%; right: 10px;
+            transform: translateY(-50%);
+            color: #aaa; 
+            cursor: pointer;
+            z-index: 10;
+        }
+        #togglePassword:hover { color: white; }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ff0f1f;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+        }
+
+        .error-msg {
+            color: #ffcccc;
+            background: rgba(229, 9, 20, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            border: 1px solid #e50914;
+        }
+    </style>
+</head>
+<body>
+
+    <video class="video-bg" autoplay loop muted playsinline>
+        <source src="{% static 'video/pelea03.mp4' %}" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <div class="card">
+        <h2>ADMINISTRADOR</h2>
+        <p>Panel de Control MCombat</p>
+
+        <form action="{{ app_path }}" method="post" id="login-form">
+            {% csrf_token %}
+            
+            <input type="text" name="username" placeholder="Usuario Admin" required autofocus>
+            
+            <div class="password-container">
+                <input type="password" name="password" placeholder="Contraseña" required id="id_password">
+                <i class="far fa-eye" id="togglePassword"></i>
+            </div>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+            
+            <button type="submit">ENTRAR AL SISTEMA</button>
+            
+            {% if form.errors %}
+                <div class="error-msg">
+                    Credenciales incorrectas. Intenta de nuevo.
+                </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#id_password');
+        
+        if(togglePassword){
+            togglePassword.addEventListener('click', function (e) {
+                // Cambiar tipo de input
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                // Cambiar icono
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+    </script>
+
+</body>
+</html>
