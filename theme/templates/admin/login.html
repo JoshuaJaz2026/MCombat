@@ -14,14 +14,14 @@
             padding: 0;
             height: 100vh;
             font-family: 'Segoe UI', sans-serif;
-            display: flex; /* Activa la pantalla dividida */
+            display: flex;
             overflow: hidden;
-            background-color: #1a1b26; /* Color de fondo general */
+            background-color: #1a1b26;
         }
 
-        /* 1. SECCIÓN DE VIDEO (AHORA A LA IZQUIERDA) */
+        /* 1. SECCIÓN DE VIDEO (IZQUIERDA) */
         .video-section {
-            flex: 1; /* Ocupa todo el espacio sobrante */
+            flex: 1;
             position: relative;
             background-color: #000;
             overflow: hidden;
@@ -34,17 +34,16 @@
             opacity: 0.7;
         }
 
-        /* Capa oscura sobre el video para que no brille tanto */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0.1), #1a1b26); /* Difuminado hacia el login */
+            background: linear-gradient(to right, rgba(0,0,0,0.1), #1a1b26);
         }
 
-        /* 2. SECCIÓN DE LOGIN (AHORA A LA DERECHA) */
+        /* 2. SECCIÓN DE LOGIN (DERECHA) */
         .login-section {
-            width: 450px; /* Ancho fijo */
-            background-color: #1e1e2e; /* Azul oscuro estilo Discord/VSCode */
+            width: 450px;
+            background-color: #1e1e2e;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -54,7 +53,6 @@
             color: white;
         }
 
-        /* ESTILOS DEL FORMULARIO (Basado en tu imagen) */
         h2 {
             font-size: 2rem;
             margin-bottom: 10px;
@@ -63,7 +61,6 @@
             text-align: left;
         }
         
-        /* Etiquetas "Usuario" y "Contraseña" */
         label {
             display: block;
             margin-bottom: 8px;
@@ -71,11 +68,10 @@
             font-size: 0.9rem;
         }
 
-        /* Inputs (Cajas de texto oscuras) */
         input {
             width: 100%;
             padding: 15px;
-            background: #2b2d3e; /* Fondo gris/azulado oscuro */
+            background: #2b2d3e;
             border: 1px solid #3f4158;
             border-radius: 8px;
             color: white;
@@ -87,11 +83,10 @@
 
         input:focus {
             outline: none;
-            border-color: #6c5ce7; /* Borde morado al escribir */
+            border-color: #6c5ce7;
             background: #32344a;
         }
 
-        /* Contenedor Password + Ojo */
         .password-container {
             position: relative;
             width: 100%;
@@ -102,7 +97,7 @@
         
         #togglePassword {
             position: absolute;
-            top: 45px; /* Ajustado para quedar dentro del input */
+            top: 45px;
             right: 15px;
             color: #888; 
             cursor: pointer;
@@ -110,11 +105,10 @@
         }
         #togglePassword:hover { color: #fff; }
 
-        /* EL BOTÓN MORADO (Estilo de tu imagen) */
         button {
             width: 100%;
             padding: 15px;
-            background: #6c5ce7; /* MORADO INTENSO */
+            background: #6c5ce7;
             color: white;
             border: none;
             border-radius: 8px;
@@ -125,11 +119,10 @@
             margin-top: 10px;
         }
         button:hover {
-            background: #5641e5; /* Morado más oscuro al pasar mouse */
-            transform: translateY(-2px); /* Efecto de elevación */
+            background: #5641e5;
+            transform: translateY(-2px);
         }
 
-        /* Link de olvidar contraseña */
         .forgot-link {
             text-align: center;
             display: block;
@@ -152,7 +145,7 @@
 
     <div class="video-section">
         <video class="video-bg" autoplay loop muted playsinline>
-            <source src="{% static 'video/pelea03.mp4' %}" type="video/mp4">
+            <source src="{% static 'img/video/pelea03.mp4' %}" type="video/mp4">
         </video>
         <div class="overlay"></div>
     </div>
