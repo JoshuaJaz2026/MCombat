@@ -7,10 +7,10 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout as django_logout
 from django.db.models import Sum
 from datetime import timedelta
-from .models import Asistencia
 import json
 import openpyxl
 
+# Importamos tus modelos
 from .models import Alumno, Asistencia, Pago
 
 # ========================================================
@@ -21,6 +21,7 @@ def smart_login_redirect(request):
     if request.user.is_superuser:
         return redirect('/admin/')
     else:
+        # Redirige al dashboard personalizado
         return redirect('dashboard')
 
 # ========================================================
@@ -31,7 +32,7 @@ def logout(request):
     return redirect('login_asistencia') 
 
 # ========================================================
-# 3. DASHBOARD (Zona Staff)
+# 3. DASHBOARD (Panel de Estadísticas)
 # ========================================================
 @staff_member_required
 def dashboard(request):
@@ -45,7 +46,7 @@ def dashboard(request):
     if ingresos_mes is None:
         ingresos_mes = 0
 
-    # B. GRÁFICO DE BARRAS
+    # B. GRÁFICO DE BARRAS (Últimos 7 días)
     labels = []
     data = []
     for i in range(6, -1, -1):
@@ -62,11 +63,11 @@ def dashboard(request):
         'chart_data': json.dumps(data),
     }
     
-    # Renderiza la plantilla que está en la carpeta admin
+    # Renderiza la plantilla del dashboard
     return render(request, 'admin/dashboard.html', context)
 
 # ========================================================
-# 4. REGISTRO DE ASISTENCIA (Para el Profesor)
+# 4. REGISTRO DE ASISTENCIA (Para el Profesor/Tablet)
 # ========================================================
 @login_required(login_url='login_asistencia')
 def registro_asistencia(request):
@@ -98,34 +99,12 @@ def registro_asistencia(request):
         except Alumno.DoesNotExist:
             messages.error(request, "❌ DNI no encontrado.")
 
-    # Renderiza la plantilla que está suelta en templates
     return render(request, 'registro.html', context)
 
 # ========================================================
-# 5. EXPORTAR EXCEL
+# 5. EXPORTAR EXCEL (Asistencias)
 # ========================================================
-@login_required(login_url='login_asistencia')
-def exportar_excel(request):
-    workbook = openpyxl.Workbook()
-    worksheet = workbook.active
-    worksheet.title = 'Alumnos MCombat'
-
-    headers = ['ID', 'Nombre', 'Apellido', 'DNI', 'Fecha Registro']
-    worksheet.append(headers)
-
-    alumnos = Alumno.objects.all()
-
-    for alumno in alumnos:
-        fecha_reg = str(alumno.fecha_registro.date()) if alumno.fecha_registro else '-'
-        worksheet.append([alumno.id, alumno.nombre, alumno.apellido, alumno.dni, fecha_reg])
-
-    response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-    response['Content-Disposition'] = 'attachment; filename="reporte_alumnos.xlsx"'
-    workbook.save(response)
-    return response
-
+@staff_member_required
 def exportar_asistencias_excel(request):
     # 1. Configurar el tipo de archivo (Excel)
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -136,26 +115,40 @@ def exportar_asistencias_excel(request):
     ws = wb.active
     ws.title = "Asistencias"
 
-    # 3. Escribir los ENCABEZADOS (La primera fila)
-    # Puedes cambiar estos nombres según lo que quieras ver
-    columns = ['Fecha', 'Alumno/Usuario', 'Hora', 'Día']
+    # 3. Encabezados
+    columns = ['Fecha', 'Alumno', 'Hora', 'Día']
     ws.append(columns)
 
-    # 4. Obtener los datos de la Base de Datos
-    # Traemos todas las asistencias ordenadas por fecha (la más reciente primero)
+    # 4. Obtener datos
     rows = Asistencia.objects.all().order_by('-fecha', '-hora')
 
-    # 5. Escribir fila por fila
+    # 5. Escribir filas
     for row in rows:
-        # Aquí asumimos que tu modelo tiene campos 'fecha', 'usuario' y 'hora'.
-        # Si se llaman diferente, cámbialo aquí.
         ws.append([
-            row.fecha,                 # Columna A
-            str(row.usuario),          # Columna B
-            row.hora,                  # Columna C
-            row.fecha.strftime("%A")   # Columna D (Día de la semana)
+            row.fecha.strftime("%Y-%m-%d"), # Fecha limpia
+            str(row.alumno),                # CORREGIDO: Usamos 'alumno' en lugar de 'usuario'
+            row.hora.strftime("%H:%M"),     # Hora limpia
+            row.fecha.strftime("%A")        # Día de la semana
         ])
 
     # 6. Guardar y enviar
+    wb.save(response)
+    return response
+
+# Si necesitas exportar la lista de alumnos (opcional, lo dejo por si acaso)
+@staff_member_required
+def exportar_alumnos_excel(request):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Alumnos MCombat'
+    headers = ['ID', 'Nombre', 'Apellido', 'DNI', 'Fecha Registro']
+    ws.append(headers)
+    alumnos = Alumno.objects.all()
+    for alumno in alumnos:
+        fecha_reg = str(alumno.fecha_registro.date()) if alumno.fecha_registro else '-'
+        ws.append([alumno.id, alumno.nombre, alumno.apellido, alumno.dni, fecha_reg])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="Listado_Alumnos.xlsx"'
     wb.save(response)
     return response

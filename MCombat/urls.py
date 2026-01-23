@@ -11,7 +11,7 @@ from django.contrib.auth import views as auth_views
 from asistencia import views
 from asistencia.views import smart_login_redirect
 
-# --- IMPORTANTE: Importamos el filtro de correo que creaste ---
+# Filtro de correo
 from asistencia.forms import ValidarCorreoResetForm 
 
 urlpatterns = [
@@ -27,28 +27,29 @@ urlpatterns = [
             redirect_authenticated_user=True
         ), name='login_asistencia'),
 
-    # --- 4. TUS RUTAS DE LA APP ---
-    path('admin/dashboard/', views.dashboard, name='dashboard'),
+    # --- 4. TUS RUTAS DE LA APP (DASHBOARD Y REGISTRO) ---
+    path('admin/dashboard/', views.dashboard, name='dashboard'), # Esta arregla el error 404
     path('logout/', views.logout, name='logout'), 
     path('', views.registro_asistencia, name='registro_asistencia'),
-    path('exportar-excel/', views.exportar_excel, name='exportar_excel'),
 
-    # --- 5. RECUPERACIÓN DE CONTRASEÑA (CON VALIDACIÓN) ---
+    # --- 5. REPORTES EXCEL ---
+    # Esta es la ruta que usa el botón verde del Dashboard
+    path('admin/exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
+
+    # --- 6. RECUPERACIÓN DE CONTRASEÑA ---
     path('reset_password/', 
          auth_views.PasswordResetView.as_view(
-             form_class=ValidarCorreoResetForm  # <--- AQUÍ ACTIVAMOS EL FILTRO
+             form_class=ValidarCorreoResetForm
          ), 
          name='password_reset'),
 
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     
-    # Al terminar, manda al login
     path('reset/<uidb64>/<token>/', 
          auth_views.PasswordResetConfirmView.as_view(success_url='/login/'), 
          name='password_reset_confirm'),
     
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
 ]
 
 if settings.DEBUG:
