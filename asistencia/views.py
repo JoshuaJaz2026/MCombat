@@ -102,7 +102,7 @@ def registro_asistencia(request):
     return render(request, 'registro.html', context)
 
 # ========================================================
-# 5. EXPORTAR EXCEL (Asistencias)
+# 5. EXPORTAR EXCEL (Asistencias - CORREGIDO)
 # ========================================================
 @staff_member_required
 def exportar_asistencias_excel(request):
@@ -119,15 +119,21 @@ def exportar_asistencias_excel(request):
     columns = ['Fecha', 'Alumno', 'Hora', 'Día']
     ws.append(columns)
 
-    # 4. Obtener datos
-    rows = Asistencia.objects.all().order_by('-fecha', '-hora')
+    # 4. Obtener datos (Quitamos '-hora' que daba error y ordenamos por ID)
+    rows = Asistencia.objects.all().order_by('-id')
 
     # 5. Escribir filas
     for row in rows:
+        # Extraemos la hora de la fecha para evitar error de campo inexistente
+        try:
+            hora_formateada = row.fecha.strftime("%H:%M")
+        except:
+            hora_formateada = "00:00"
+            
         ws.append([
             row.fecha.strftime("%Y-%m-%d"), # Fecha limpia
-            str(row.alumno),                # CORREGIDO: Usamos 'alumno' en lugar de 'usuario'
-            row.hora.strftime("%H:%M"),     # Hora limpia
+            str(row.alumno),                # Nombre del Alumno
+            hora_formateada,                # Hora (Sacada de la fecha)
             row.fecha.strftime("%A")        # Día de la semana
         ])
 
