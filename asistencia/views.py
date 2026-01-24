@@ -94,82 +94,125 @@ def registro_asistencia(request):
     return render(request, 'registro.html', context)
 
 # ========================================================
-# 5. EXPORTAR EXCEL (DISEÑO PRO MCOMBAT)
+# 5. EXPORTAR EXCEL (ESTILO DASHBOARD FINANCIERO)
 # ========================================================
 @staff_member_required
 def exportar_asistencias_excel(request):
-    # 1. Configurar respuesta HTTP
+    # 1. Configurar respuesta
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=Reporte_Asistencias_MCombat.xlsx'
 
-    # 2. Crear libro y hoja
+    # 2. Crear libro
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Historial Asistencias"
-
-    # --- DEFINIR ESTILOS ---
-    # Rojo MCombat para fondo
-    header_fill = PatternFill(start_color='E50914', end_color='E50914', fill_type='solid')
-    # Texto Blanco y Negrita
-    header_font = Font(name='Arial', size=12, bold=True, color='FFFFFF')
-    # Alineación centrada
-    center_align = Alignment(horizontal='center', vertical='center')
-    # Bordes finos
-    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), 
-                         top=Side(style='thin'), bottom=Side(style='thin'))
-
-    # 3. Encabezados
-    columns = ['FECHA', 'ALUMNO', 'HORA', 'DÍA']
+    ws.title = "Dashboard Asistencias"
     
-    # Escribir y estilizar encabezados (Fila 1)
-    for col_num, column_title in enumerate(columns, 1):
-        cell = ws.cell(row=1, column=col_num)
-        cell.value = column_title
-        cell.font = header_font
-        cell.fill = header_fill
-        cell.alignment = center_align
-        cell.border = thin_border
+    # --- PALETA DE COLORES ---
+    COLOR_NAVY_HEADER = '0F172A'   # Azul Marino muy oscuro (Encabezado Principal)
+    COLOR_SUB_HEADER  = '1E293B'   # Gris Azulado (Encabezados de Tabla)
+    COLOR_TEXTO_BLANCO= 'FFFFFF'
+    COLOR_FILA_PAR    = 'F1F5F9'   # Gris muy clarito (casi blanco)
+    COLOR_FILA_IMPAR  = 'FFFFFF'   # Blanco puro
+    COLOR_VERDE_EXITO = '22C55E'   # Verde estilo Excel financiero (para resaltar)
+    COLOR_BORDE       = 'CBD5E1'   # Gris suave para las líneas
 
-    # 4. Obtener datos
+    # --- ESTILOS ---
+    # Fuente Título Principal
+    fuente_titulo = Font(name='Calibri', size=18, bold=True, color=COLOR_TEXTO_BLANCO)
+    relleno_titulo = PatternFill(start_color=COLOR_NAVY_HEADER, end_color=COLOR_NAVY_HEADER, fill_type='solid')
+
+    # Fuente Encabezados de Tabla
+    fuente_th = Font(name='Calibri', size=12, bold=True, color=COLOR_TEXTO_BLANCO)
+    relleno_th = PatternFill(start_color=COLOR_SUB_HEADER, end_color=COLOR_SUB_HEADER, fill_type='solid')
+
+    # Alineación y Bordes
+    center = Alignment(horizontal='center', vertical='center')
+    left   = Alignment(horizontal='left', vertical='center')
+    borde  = Border(
+        left=Side(style='thin', color=COLOR_BORDE), 
+        right=Side(style='thin', color=COLOR_BORDE), 
+        top=Side(style='thin', color=COLOR_BORDE), 
+        bottom=Side(style='thin', color=COLOR_BORDE)
+    )
+
+    # --- ESTRUCTURA DEL REPORTE ---
+
+    # 1. TÍTULO TIPO "BANNER" (Filas 1-2)
+    ws.merge_cells('A1:D2')
+    celda_titulo = ws['A1']
+    celda_titulo.value = "📊 REPORTE DE ASISTENCIAS MCOMBAT"
+    celda_titulo.font = fuente_titulo
+    celda_titulo.fill = relleno_titulo
+    celda_titulo.alignment = center
+
+    # 2. ENCABEZADOS DE COLUMNA (Fila 4 - Dejamos la 3 vacía como separador)
+    headers = ['FECHA', 'ALUMNO / LUCHADOR', 'HORA DE LLEGADA', 'DÍA SEMANA']
+    fila_header = 4
+    
+    for col_num, title in enumerate(headers, 1):
+        cell = ws.cell(row=fila_header, column=col_num)
+        cell.value = title
+        cell.font = fuente_th
+        cell.fill = relleno_th
+        cell.alignment = center
+        cell.border = borde
+
+    # 3. DATOS (Desde Fila 5)
     rows = Asistencia.objects.all().order_by('-id')
+    fila_inicial = 5
 
-    # 5. Escribir datos con estilo (Desde Fila 2)
-    for row_num, row in enumerate(rows, 2):
+    for i, row in enumerate(rows):
+        num_fila = fila_inicial + i
+        
+        # Procesar hora
         try:
-            hora_formateada = row.fecha.strftime("%H:%M")
+            hora_str = row.fecha.strftime("%H:%M")
         except:
-            hora_formateada = "00:00"
+            hora_str = "-"
 
-        # Datos a escribir
         valores = [
-            row.fecha.strftime("%Y-%m-%d"),
-            str(row.alumno),
-            hora_formateada,
-            row.fecha.strftime("%A")
+            row.fecha.strftime("%Y-%m-%d"), # A: Fecha
+            str(row.alumno),                # B: Nombre
+            hora_str,                       # C: Hora
+            row.fecha.strftime("%A")        # D: Día
         ]
 
-        # Escribir celda por celda para ponerle borde y alineación
+        # Alternar color de fondo (Efecto Cebra)
+        if i % 2 == 0:
+            color_fondo = COLOR_FILA_PAR
+        else:
+            color_fondo = COLOR_FILA_IMPAR
+        
+        relleno_fila = PatternFill(start_color=color_fondo, end_color=color_fondo, fill_type='solid')
+        fuente_normal = Font(name='Calibri', size=11, color='334155') # Gris oscuro para texto
+
         for col_num, valor in enumerate(valores, 1):
-            cell = ws.cell(row=row_num, column=col_num)
+            cell = ws.cell(row=num_fila, column=col_num)
             cell.value = valor
-            cell.alignment = center_align # Centramos todo el contenido
-            cell.border = thin_border     # Ponemos bordes a todo
+            cell.fill = relleno_fila
+            cell.font = fuente_normal
+            cell.border = borde
+            
+            # Alineación específica
+            if col_num == 2: # Nombre del alumno (Columna B)
+                cell.alignment = left
+                cell.font = Font(name='Calibri', size=11, bold=True, color='334155') # Nombre en negrita
+            else:
+                cell.alignment = center
 
-    # 6. AUTO-AJUSTAR ANCHO DE COLUMNAS
-    # Esto recorre las columnas y las ensancha si el texto es largo
-    for col in ws.columns:
-        max_length = 0
-        column = col[0].column_letter # Ej: 'A', 'B'
-        for cell in col:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
-        adjusted_width = (max_length + 2)
-        ws.column_dimensions[column].width = adjusted_width
+            # DETALLE VISUAL: Si es Domingo (Sunday), pintar el texto de ROJO
+            if col_num == 4 and valor == 'Sunday':
+                 cell.font = Font(name='Calibri', size=11, color='DC2626', bold=True)
 
-    # 7. Guardar
+
+    # 4. AUTO-AJUSTE DE ANCHO DE COLUMNAS
+    anchos = [15, 45, 20, 20] # Anchos fijos para que se vea ordenado
+    letras = ['A', 'B', 'C', 'D']
+    
+    for i, ancho in enumerate(anchos):
+        ws.column_dimensions[letras[i]].width = ancho
+
+    # 5. Guardar
     wb.save(response)
     return response
 
