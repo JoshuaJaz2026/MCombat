@@ -1,11 +1,12 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin  # <--- IMPORTANTE PARA USUARIOS
-from django.contrib.auth.models import User      # <--- IMPORTANTE PARA USUARIOS
-from django.utils.safestring import mark_safe 
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from django.utils.safestring import mark_safe
+from django.utils.html import format_html # Importante para el botón de WhatsApp
 from .models import Alumno, Asistencia, Pago, Disciplina
 
 # ================================================================
-# 1. PERSONALIZACIÓN DE USUARIOS (NUEVO: Para ver Roles)
+# 1. PERSONALIZACIÓN DE USUARIOS (ROLES VISUALES)
 # ================================================================
 
 # Primero: "Des-registramos" el admin de usuarios por defecto
@@ -36,17 +37,37 @@ class CustomUserAdmin(UserAdmin):
             return mark_safe('<span style="color: #777;">👤 USUARIO</span>')
 
 # ================================================================
-# 2. CONFIGURACIÓN DE ALUMNOS (Tu código original)
+# 2. CONFIGURACIÓN DE ALUMNOS (CON WHATSAPP)
 # ================================================================
 class AlumnoAdmin(admin.ModelAdmin):
-    # Qué columnas ver
-    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'fecha_vencimiento', 'estado_pago')
+    # Agregamos 'telefono' y 'boton_whatsapp' a las columnas
+    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'telefono', 'boton_whatsapp', 'fecha_vencimiento', 'estado_pago')
     
     # Esto hace que la FOTO y el NOMBRE sean clics para editar
     list_display_links = ('vista_foto', 'nombre') 
     
     search_fields = ('nombre', 'apellido', 'dni')
     list_filter = ('fecha_vencimiento',)
+
+    # --- NUEVO: BOTÓN DE WHATSAPP ---
+    def boton_whatsapp(self, obj):
+        if obj.telefono:
+            # Limpiamos el número (quitamos espacios o guiones)
+            numero_limpio = str(obj.telefono).replace(" ", "").replace("-", "")
+            
+            # Link oficial de WhatsApp API (Agregamos 51 de Perú)
+            link = f"https://wa.me/51{numero_limpio}"
+            
+            # Retornamos el botón verde
+            return format_html(
+                '<a href="{}" target="_blank" style="background-color:#25D366; color:white; padding:4px 10px; border-radius:15px; text-decoration:none; font-weight:bold; font-family:sans-serif; font-size: 12px;">'
+                '💬 Chat'
+                '</a>',
+                link
+            )
+        else:
+            return "-"
+    boton_whatsapp.short_description = "WhatsApp"
 
     # --- SEMÁFORO VISUAL ---
     def estado_pago(self, obj):
@@ -57,7 +78,7 @@ class AlumnoAdmin(admin.ModelAdmin):
     estado_pago.short_description = "Estado Membresía"
 
 # ================================================================
-# 3. CONFIGURACIÓN DE PAGOS (Tu código original)
+# 3. CONFIGURACIÓN DE PAGOS
 # ================================================================
 class PagoAdmin(admin.ModelAdmin):
     list_display = ('alumno', 'monto', 'fecha_pago', 'fecha_vencimiento', 'mostrar_disciplinas')
