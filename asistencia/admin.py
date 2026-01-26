@@ -2,63 +2,47 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
-from django.utils.html import format_html # Importante para el botón de WhatsApp
+from django.utils.html import format_html 
 from .models import Alumno, Asistencia, Pago, Disciplina
 
 # ================================================================
 # 1. PERSONALIZACIÓN DE USUARIOS (ROLES VISUALES)
 # ================================================================
-
-# Primero: "Des-registramos" el admin de usuarios por defecto
 try:
     admin.site.unregister(User)
 except admin.sites.NotRegistered:
     pass
 
-# Segundo: Registramos nuestro admin personalizado con la columna ROL
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    # Agregamos 'ver_rol' a las columnas visibles
     list_display = ('username', 'email', 'first_name', 'last_name', 'ver_rol', 'is_active')
-    
-    # Filtros laterales
     list_filter = ('is_superuser', 'is_staff', 'is_active')
 
-    # --- LÓGICA DE LA COLUMNA DE ROLES ---
     @admin.display(description='ROL DEL SISTEMA')
     def ver_rol(self, obj):
         if obj.is_superuser:
-            # Color Rojo y Corona para el Jefe
             return mark_safe('<span style="color: #d9534f; font-weight: bold; font-size: 1.1em;">👑 ADMINISTRADOR</span>')
         elif obj.is_staff:
-            # Color Azul y Guante para el Staff
             return mark_safe('<span style="color: #0275d8; font-weight: bold;">🥊 STAFF</span>')
         else:
             return mark_safe('<span style="color: #777;">👤 USUARIO</span>')
 
 # ================================================================
-# 2. CONFIGURACIÓN DE ALUMNOS (CON WHATSAPP)
+# 2. CONFIGURACIÓN DE ALUMNOS (WHATSAPP + CORREO)
 # ================================================================
 class AlumnoAdmin(admin.ModelAdmin):
-    # Agregamos 'telefono' y 'boton_whatsapp' a las columnas
-    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'telefono', 'boton_whatsapp', 'fecha_vencimiento', 'estado_pago')
+    # Agregamos 'boton_email' a la lista de columnas
+    list_display = ('vista_foto', 'nombre', 'apellido', 'telefono', 'boton_whatsapp', 'boton_email', 'fecha_vencimiento', 'estado_pago')
     
-    # Esto hace que la FOTO y el NOMBRE sean clics para editar
     list_display_links = ('vista_foto', 'nombre') 
-    
-    search_fields = ('nombre', 'apellido', 'dni')
+    search_fields = ('nombre', 'apellido', 'dni', 'email') 
     list_filter = ('fecha_vencimiento',)
 
-    # --- NUEVO: BOTÓN DE WHATSAPP ---
+    # --- BOTÓN DE WHATSAPP (VERDE) ---
     def boton_whatsapp(self, obj):
         if obj.telefono:
-            # Limpiamos el número (quitamos espacios o guiones)
             numero_limpio = str(obj.telefono).replace(" ", "").replace("-", "")
-            
-            # Link oficial de WhatsApp API (Agregamos 51 de Perú)
             link = f"https://wa.me/51{numero_limpio}"
-            
-            # Retornamos el botón verde
             return format_html(
                 '<a href="{}" target="_blank" style="background-color:#25D366; color:white; padding:4px 10px; border-radius:15px; text-decoration:none; font-weight:bold; font-family:sans-serif; font-size: 12px;">'
                 '💬 Chat'
@@ -69,12 +53,25 @@ class AlumnoAdmin(admin.ModelAdmin):
             return "-"
     boton_whatsapp.short_description = "WhatsApp"
 
-    # --- SEMÁFORO VISUAL ---
+    # --- NUEVO: BOTÓN DE CORREO (ROJO) ---
+    def boton_email(self, obj):
+        if obj.email:
+            # Crea un enlace que abre la app de correo
+            return format_html(
+                '<a href="mailto:{}" style="background-color:#EA4335; color:white; padding:4px 10px; border-radius:15px; text-decoration:none; font-weight:bold; font-family:sans-serif; font-size: 12px;">'
+                '✉️ Enviar'
+                '</a>',
+                obj.email
+            )
+        else:
+            return "-"
+    boton_email.short_description = "Correo"
+
+    # --- SEMÁFORO DE ESTADO ---
     def estado_pago(self, obj):
         if obj.esta_al_dia():
             return mark_safe('<span style="color: green; font-weight: bold;">✅ Al día</span>')
         return mark_safe('<span style="color: red; font-weight: bold;">❌ Vencido</span>')
-    
     estado_pago.short_description = "Estado Membresía"
 
 # ================================================================
@@ -85,7 +82,6 @@ class PagoAdmin(admin.ModelAdmin):
     list_filter = ('fecha_pago', 'disciplinas') 
     search_fields = ('alumno__nombre', 'alumno__apellido', 'alumno__dni')
     autocomplete_fields = ['alumno']
-    
     filter_horizontal = ('disciplinas',) 
 
     def mostrar_disciplinas(self, obj):
