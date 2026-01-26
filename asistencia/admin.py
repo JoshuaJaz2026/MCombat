@@ -28,11 +28,11 @@ class CustomUserAdmin(UserAdmin):
             return mark_safe('<span style="color: #777;">👤 USUARIO</span>')
 
 # ================================================================
-# 2. CONFIGURACIÓN DE ALUMNOS (CON DNI VISIBLE)
+# 2. CONFIGURACIÓN DE ALUMNOS (SOLO WHATSAPP + DNI)
 # ================================================================
 class AlumnoAdmin(admin.ModelAdmin):
-    # HE AGREGADO 'dni' AQUÍ 👇
-    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'telefono', 'boton_whatsapp', 'boton_email', 'fecha_vencimiento', 'estado_pago')
+    # HEMOS QUITADO 'boton_email' DE AQUÍ 👇
+    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'telefono', 'boton_whatsapp', 'fecha_vencimiento', 'estado_pago')
     
     list_display_links = ('vista_foto', 'nombre') 
     search_fields = ('nombre', 'apellido', 'dni', 'email') 
@@ -52,20 +52,6 @@ class AlumnoAdmin(admin.ModelAdmin):
         else:
             return "-"
     boton_whatsapp.short_description = "WhatsApp"
-
-    # --- BOTÓN DE GMAIL ---
-    def boton_email(self, obj):
-        if obj.email:
-            gmail_link = f"https://mail.google.com/mail/?view=cm&fs=1&to={obj.email}"
-            return format_html(
-                '<a href="{}" target="_blank" style="background-color:#EA4335; color:white; padding:4px 10px; border-radius:15px; text-decoration:none; font-weight:bold; font-family:sans-serif; font-size: 12px;">'
-                '✉️ Gmail'
-                '</a>',
-                gmail_link
-            )
-        else:
-            return "-"
-    boton_email.short_description = "Correo"
 
     # --- SEMÁFORO DE ESTADO ---
     def estado_pago(self, obj):
