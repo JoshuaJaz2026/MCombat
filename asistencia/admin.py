@@ -6,7 +6,7 @@ from django.utils.html import format_html
 from .models import Alumno, Asistencia, Pago, Disciplina
 
 # ================================================================
-# 1. PERSONALIZACIÓN DE USUARIOS (ROLES VISUALES)
+# 1. PERSONALIZACIÓN DE USUARIOS
 # ================================================================
 try:
     admin.site.unregister(User)
@@ -28,12 +28,10 @@ class CustomUserAdmin(UserAdmin):
             return mark_safe('<span style="color: #777;">👤 USUARIO</span>')
 
 # ================================================================
-# 2. CONFIGURACIÓN DE ALUMNOS (WHATSAPP + CORREO)
+# 2. CONFIGURACIÓN DE ALUMNOS (WHATSAPP + GMAIL DIRECTO)
 # ================================================================
 class AlumnoAdmin(admin.ModelAdmin):
-    # Agregamos 'boton_email' a la lista de columnas
     list_display = ('vista_foto', 'nombre', 'apellido', 'telefono', 'boton_whatsapp', 'boton_email', 'fecha_vencimiento', 'estado_pago')
-    
     list_display_links = ('vista_foto', 'nombre') 
     search_fields = ('nombre', 'apellido', 'dni', 'email') 
     list_filter = ('fecha_vencimiento',)
@@ -53,15 +51,18 @@ class AlumnoAdmin(admin.ModelAdmin):
             return "-"
     boton_whatsapp.short_description = "WhatsApp"
 
-    # --- NUEVO: BOTÓN DE CORREO (ROJO) ---
+    # --- BOTÓN DE GMAIL (ROJO - APERTURA DIRECTA) ---
     def boton_email(self, obj):
         if obj.email:
-            # Crea un enlace que abre la app de correo
+            # Enlace especial de Google para abrir ventana de redacción
+            # view=cm (Compose Message), fs=1 (FullScreen), to=CORREO
+            gmail_link = f"https://mail.google.com/mail/?view=cm&fs=1&to={obj.email}"
+            
             return format_html(
-                '<a href="mailto:{}" style="background-color:#EA4335; color:white; padding:4px 10px; border-radius:15px; text-decoration:none; font-weight:bold; font-family:sans-serif; font-size: 12px;">'
-                '✉️ Enviar'
+                '<a href="{}" target="_blank" style="background-color:#EA4335; color:white; padding:4px 10px; border-radius:15px; text-decoration:none; font-weight:bold; font-family:sans-serif; font-size: 12px;">'
+                '✉️ Gmail'
                 '</a>',
-                obj.email
+                gmail_link
             )
         else:
             return "-"
