@@ -14,27 +14,29 @@ from asistencia.forms import ValidarCorreoResetForm
 
 urlpatterns = [
     # --- 1. RUTAS PERSONALIZADAS DEL ADMIN (¡VAN PRIMERO!) ---
-    # Deben ir antes de admin.site.urls para que Django no las confunda
     path('admin/dashboard/', views.dashboard, name='dashboard'),
     path('admin/exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
 
     # --- 2. ADMIN OFICIAL DE DJANGO ---
     path('admin/', admin.site.urls),
 
-    # --- 3. RUTA INTELIGENTE (SEMÁFORO) ---
+    # --- 3. NUEVA RUTA: CONSULTA PÚBLICA (ALUMNOS) ---
+    path('consulta/', views.consulta_publica, name='consulta_publica'),
+
+    # --- 4. RUTA INTELIGENTE (SEMÁFORO) ---
     path('smart-redirect/', smart_login_redirect, name='smart_redirect'),
 
-    # --- 4. LOGIN ---
+    # --- 5. LOGIN ---
     path('login/', auth_views.LoginView.as_view(
             template_name='login_asistencia.html', 
             redirect_authenticated_user=True
         ), name='login_asistencia'),
 
-    # --- 5. OTRAS RUTAS ---
+    # --- 6. OTRAS RUTAS ---
     path('logout/', views.logout, name='logout'), 
     path('', views.registro_asistencia, name='registro_asistencia'),
 
-    # --- 6. RECUPERACIÓN DE CONTRASEÑA ---
+    # --- 7. RECUPERACIÓN DE CONTRASEÑA ---
     path('reset_password/', 
          auth_views.PasswordResetView.as_view(
              form_class=ValidarCorreoResetForm

@@ -233,3 +233,44 @@ def exportar_alumnos_excel(request):
     response['Content-Disposition'] = 'attachment; filename="Listado_Alumnos.xlsx"'
     wb.save(response)
     return response
+
+# ========================================================
+# 6. CONSULTA PÚBLICA PARA ALUMNOS (SIN LOGIN)
+# ========================================================
+def consulta_publica(request):
+    context = {}
+    
+    if request.method == 'POST':
+        dni_ingresado = request.POST.get('dni')
+        
+        try:
+            alumno = Alumno.objects.get(dni=dni_ingresado)
+            
+            # Definimos el estado y los colores
+            if alumno.esta_al_dia():
+                estado_texto = "¡ESTÁS ACTIVO!"
+                clase_color = "success" # Verde
+                mensaje_extra = "Nos vemos en el entrenamiento. 🥊"
+                icono = "✅"
+            else:
+                estado_texto = "MEMBRESÍA VENCIDA"
+                clase_color = "danger"  # Rojo
+                mensaje_extra = "Por favor, acércate a recepción para renovar."
+                icono = "⛔"
+            
+            context = {
+                'resultado': True,
+                'alumno': alumno,
+                'estado_texto': estado_texto,
+                'clase_color': clase_color,
+                'mensaje_extra': mensaje_extra,
+                'icono': icono
+            }
+            
+        except Alumno.DoesNotExist:
+            context = {
+                'error': True,
+                'mensaje': "❌ No encontramos ese DNI en el sistema."
+            }
+            
+    return render(request, 'consulta_publica.html', context)
