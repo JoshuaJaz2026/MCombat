@@ -28,15 +28,17 @@ class CustomUserAdmin(UserAdmin):
             return mark_safe('<span style="color: #777;">👤 USUARIO</span>')
 
 # ================================================================
-# 2. CONFIGURACIÓN DE ALUMNOS (WHATSAPP + GMAIL DIRECTO)
+# 2. CONFIGURACIÓN DE ALUMNOS (CON DNI VISIBLE)
 # ================================================================
 class AlumnoAdmin(admin.ModelAdmin):
-    list_display = ('vista_foto', 'nombre', 'apellido', 'telefono', 'boton_whatsapp', 'boton_email', 'fecha_vencimiento', 'estado_pago')
+    # HE AGREGADO 'dni' AQUÍ 👇
+    list_display = ('vista_foto', 'nombre', 'apellido', 'dni', 'telefono', 'boton_whatsapp', 'boton_email', 'fecha_vencimiento', 'estado_pago')
+    
     list_display_links = ('vista_foto', 'nombre') 
     search_fields = ('nombre', 'apellido', 'dni', 'email') 
     list_filter = ('fecha_vencimiento',)
 
-    # --- BOTÓN DE WHATSAPP (VERDE) ---
+    # --- BOTÓN DE WHATSAPP ---
     def boton_whatsapp(self, obj):
         if obj.telefono:
             numero_limpio = str(obj.telefono).replace(" ", "").replace("-", "")
@@ -51,13 +53,10 @@ class AlumnoAdmin(admin.ModelAdmin):
             return "-"
     boton_whatsapp.short_description = "WhatsApp"
 
-    # --- BOTÓN DE GMAIL (ROJO - APERTURA DIRECTA) ---
+    # --- BOTÓN DE GMAIL ---
     def boton_email(self, obj):
         if obj.email:
-            # Enlace especial de Google para abrir ventana de redacción
-            # view=cm (Compose Message), fs=1 (FullScreen), to=CORREO
             gmail_link = f"https://mail.google.com/mail/?view=cm&fs=1&to={obj.email}"
-            
             return format_html(
                 '<a href="{}" target="_blank" style="background-color:#EA4335; color:white; padding:4px 10px; border-radius:15px; text-decoration:none; font-weight:bold; font-family:sans-serif; font-size: 12px;">'
                 '✉️ Gmail'
