@@ -14,3 +14,8 @@ PANEL DE ADMINISTRADOR
 http://127.0.0.1:8000/admin/
 
 -------------------------------
+
+PANEL DE CONSULTA ALUMNO
+https://mcombat.onrender.com/consulta/
+
+-------------------------------

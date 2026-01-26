@@ -10,20 +10,18 @@
             background-color: #0f172a; /* Fondo Oscuro */
             color: white;
             font-family: 'Segoe UI', sans-serif;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify_content: center;
         }
+        /* Estilo de la Tarjeta del Formulario */
         .card-consulta {
             background-color: #1e293b;
             border: 1px solid #334155;
             border-radius: 15px;
             padding: 30px;
             width: 100%;
-            max-width: 400px;
+            max-width: 400px; /* Ancho máximo para que no se vea gigante */
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
+        /* Botón Rojo MCombat */
         .btn-mcombat {
             background-color: #E50914;
             color: white;
@@ -33,8 +31,11 @@
             padding: 12px;
             border-radius: 8px;
             margin-top: 15px;
+            transition: background-color 0.3s ease;
         }
         .btn-mcombat:hover { background-color: #b20710; color: white; }
+        
+        /* Cajas de Resultado */
         .resultado-box {
             margin-top: 20px;
             padding: 20px;
@@ -43,6 +44,8 @@
         }
         .bg-success-dark { background-color: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #22c55e; }
         .bg-danger-dark { background-color: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; }
+        
+        /* Input del DNI */
         .form-control {
             background-color: #0f172a;
             border: 1px solid #334155;
@@ -57,46 +60,54 @@
             border-color: #E50914;
             box-shadow: 0 0 5px rgba(229, 9, 20, 0.5);
         }
+        /* Placeholder del input */
+        ::placeholder { color: #64748b !important; opacity: 1; }
     </style>
 </head>
 <body>
 
-    <div class="card-consulta">
-        <h3 class="text-center mb-4 fw-bold">🥊 MI ESTADO MCOMBAT</h3>
-        <p class="text-center text-muted mb-4">Ingresa tu DNI para verificar si tu membresía está activa.</p>
+    <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100 py-4">
+        
+        <div class="card-consulta">
+            <h3 class="text-center mb-4 fw-bold">🥊 MI ESTADO MCOMBAT</h3>
+            <p class="text-center text-muted mb-4">Ingresa tu DNI para verificar si tu membresía está activa.</p>
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <input type="tel" name="dni" class="form-control" placeholder="Escribe tu DNI aquí" required autocomplete="off">
-            </div>
-            <button type="submit" class="btn btn-mcombat">🔍 CONSULTAR AHORA</button>
-        </form>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input type="tel" name="dni" class="form-control" placeholder="Escribe tu DNI aquí" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-mcombat">🔍 CONSULTAR AHORA</button>
+            </form>
 
-        {% if resultado %}
-            <div class="resultado-box {% if clase_color == 'success' %}bg-success-dark{% else %}bg-danger-dark{% endif %}">
-                <div style="font-size: 3rem;">{{ icono }}</div>
-                <h4 class="fw-bold mt-2">{{ estado_texto }}</h4>
-                <p class="mb-1 text-white">{{ alumno.nombre }} {{ alumno.apellido }}</p>
-                <hr style="opacity: 0.3;">
-                <p class="mb-0 small text-white-50">Vence: <strong>{{ alumno.fecha_vencimiento|date:"d M Y" }}</strong></p>
-                <p class="mt-2 small">{{ mensaje_extra }}</p>
-            </div>
-            <div class="text-center mt-3">
-                <a href="{% url 'consulta_publica' %}" class="text-decoration-none text-muted small">Nueva Consulta</a>
-            </div>
-        {% endif %}
+            {% if resultado %}
+                <div class="resultado-box {% if clase_color == 'success' %}bg-success-dark{% else %}bg-danger-dark{% endif %}">
+                    <div style="font-size: 3rem;">{{ icono }}</div>
+                    <h4 class="fw-bold mt-2">{{ estado_texto }}</h4>
+                    <p class="mb-1 text-white fw-bold">{{ alumno.nombre }} {{ alumno.apellido }}</p>
+                    <hr style="opacity: 0.3; margin: 10px 0;">
+                    <p class="mb-0 small text-white-50">Vence: <strong>{{ alumno.fecha_vencimiento|date:"d \d\e F \d\e Y" }}</strong></p>
+                    <p class="mt-2 small mb-0">{{ mensaje_extra }}</p>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'consulta_publica' %}" class="text-decoration-none text-muted small hover-link">Nueva Consulta</a>
+                </div>
+            {% endif %}
 
-        {% if error %}
-            <div class="alert alert-danger mt-4 text-center border-0" style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444;">
-                {{ mensaje }}
-            </div>
-        {% endif %}
+            {% if error %}
+                <div class="alert alert-danger mt-4 text-center border-0 fw-bold" style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444;">
+                    {{ mensaje }}
+                </div>
+            {% endif %}
 
-        <div class="mt-4 text-center">
-            <a href="{% url 'login_asistencia' %}" class="text-muted small text-decoration-none">Soy Administrador</a>
+            <div class="mt-4 text-center">
+                <a href="{% url 'login_asistencia' %}" class="text-muted small text-decoration-none hover-link">Soy Administrador</a>
+            </div>
         </div>
+
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
