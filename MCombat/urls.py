@@ -13,30 +13,39 @@ from asistencia.views import smart_login_redirect
 from asistencia.forms import ValidarCorreoResetForm 
 
 urlpatterns = [
-    # --- 1. RUTAS PERSONALIZADAS DEL ADMIN (¡VAN PRIMERO!) ---
+    # ==============================================================================
+    # 1. CORRECCIÓN MAESTRA: FORZAR LOGIN PERSONALIZADO EN ADMIN
+    # (Esto evita que salga el login gris por defecto de Django)
+    # ==============================================================================
+    path('admin/login/', auth_views.LoginView.as_view(
+            template_name='login_asistencia.html', 
+            redirect_authenticated_user=True
+        ), name='admin_login_custom'),
+
+    # --- 2. RUTAS PERSONALIZADAS DEL ADMIN ---
     path('admin/dashboard/', views.dashboard, name='dashboard'),
     path('admin/exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
 
-    # --- 2. ADMIN OFICIAL DE DJANGO ---
+    # --- 3. ADMIN OFICIAL DE DJANGO ---
     path('admin/', admin.site.urls),
 
-    # --- 3. NUEVA RUTA: CONSULTA PÚBLICA (ALUMNOS) ---
+    # --- 4. NUEVA RUTA: CONSULTA PÚBLICA (ALUMNOS) ---
     path('consulta/', views.consulta_publica, name='consulta_publica'),
 
-    # --- 4. RUTA INTELIGENTE (SEMÁFORO) ---
+    # --- 5. RUTA INTELIGENTE (SEMÁFORO) ---
     path('smart-redirect/', smart_login_redirect, name='smart_redirect'),
 
-    # --- 5. LOGIN ---
+    # --- 6. LOGIN GENERAL (Ruta normal) ---
     path('login/', auth_views.LoginView.as_view(
             template_name='login_asistencia.html', 
             redirect_authenticated_user=True
         ), name='login_asistencia'),
 
-    # --- 6. OTRAS RUTAS ---
+    # --- 7. OTRAS RUTAS ---
     path('logout/', views.logout, name='logout'), 
     path('', views.registro_asistencia, name='registro_asistencia'),
 
-    # --- 7. RECUPERACIÓN DE CONTRASEÑA ---
+    # --- 8. RECUPERACIÓN DE CONTRASEÑA ---
     path('reset_password/', 
          auth_views.PasswordResetView.as_view(
              form_class=ValidarCorreoResetForm
