@@ -15,7 +15,7 @@
         body {
             margin: 0;
             height: 100vh;
-            /* Fondo del Login */
+            /* Fondo del Login con tu imagen */
             background: url("{% static 'img/video/FONDO_LOGIN.JPG' %}") no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', sans-serif;
@@ -25,12 +25,12 @@
             color: white;
         }
 
-        /* Capa oscura */
+        /* Capa oscura para que se lea el texto */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6); /* Un poco más oscuro para contraste */
             z-index: -1;
         }
 
@@ -116,8 +116,9 @@
             box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
         }
 
+        /* Enlaces */
         .forgot-link {
-            display: block; /* Para que ocupe su propia línea */
+            display: block; 
             margin-top: 15px;
             color: #888;
             text-decoration: none;
