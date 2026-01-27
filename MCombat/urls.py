@@ -13,11 +13,15 @@ from asistencia.views import smart_login_redirect
 from asistencia.forms import ValidarCorreoResetForm 
 
 urlpatterns = [
-    # --- 1. RUTAS PERSONALIZADAS DEL ADMIN (¡VAN PRIMERO!) ---
+    # ==============================================================================
+    # RUTAS DEL SISTEMA
+    # ==============================================================================
+
+    # --- 1. RUTAS PERSONALIZADAS DEL ADMIN (DASHBOARD Y EXCEL) ---
     path('admin/dashboard/', views.dashboard, name='dashboard'),
     path('admin/exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
 
-    # --- 2. ADMIN OFICIAL DE DJANGO ---
+    # --- 2. ADMIN OFICIAL DE DJANGO (Vuelve el Login Morado/Jazzmin) ---
     path('admin/', admin.site.urls),
 
     # --- 3. NUEVA RUTA: CONSULTA PÚBLICA (ALUMNOS) ---
@@ -26,7 +30,7 @@ urlpatterns = [
     # --- 4. RUTA INTELIGENTE (SEMÁFORO) ---
     path('smart-redirect/', smart_login_redirect, name='smart_redirect'),
 
-    # --- 5. LOGIN ---
+    # --- 5. LOGIN PERSONALIZADO (Solo en /login/) ---
     path('login/', auth_views.LoginView.as_view(
             template_name='login_asistencia.html', 
             redirect_authenticated_user=True
