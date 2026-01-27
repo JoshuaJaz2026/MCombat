@@ -10,7 +10,7 @@
 
     <style>
         /* =========================================
-           ESTILOS COMPLETOS (Incrustados para seguridad)
+           ESTILOS COMPLETOS MCOMBAT
            ========================================= */
         body {
             margin: 0;
@@ -117,14 +117,24 @@
         }
 
         .forgot-link {
-            display: inline-block;
-            margin-top: 20px;
+            display: block; /* Para que ocupe su propia línea */
+            margin-top: 15px;
             color: #888;
             text-decoration: none;
             font-size: 0.85rem;
             transition: 0.3s;
         }
         .forgot-link:hover { color: white; text-decoration: underline; }
+
+        .back-link {
+            display: block;
+            margin-top: 10px;
+            color: #555;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        .back-link:hover { color: #aaa; }
+
     </style>
 </head>
 <body>
@@ -146,6 +156,10 @@
             
             <a href="{% url 'password_reset' %}" class="forgot-link">
                 ¿Olvidaste tu contraseña?
+            </a>
+
+            <a href="{% url 'consulta_publica' %}" class="back-link">
+                ⬅ Volver a Consulta Alumnos
             </a>
         </form>
         
