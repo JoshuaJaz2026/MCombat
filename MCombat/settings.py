@@ -211,12 +211,15 @@ DEFAULT_FROM_EMAIL = 'Soporte MCombat <mcombatsoporte@gmail.com>'
 # 🧭 REDIRECCIONES DE LOGIN (AJUSTE FINAL)
 # ========================================================
 
-# 1. Página de Login Oficial
-LOGIN_URL = '/login/'
+# ==========================================
+# 🚦 REDIRECCIONES DE LOGIN
+# ==========================================
 
-# 2. DESTINO AL ENTRAR: ¡AQUÍ ESTÁ LA CLAVE! 🔑
-# En lugar de mandar a '/admin/dashboard/', mandamos al semáforo
-LOGIN_REDIRECT_URL = 'smart_redirect' 
+# 1. Si el usuario intenta entrar a algo privado sin permiso, mándalo aquí:
+LOGIN_URL = 'login_asistencia'
 
-# 3. Después de Logout
-#LOGOUT_REDIRECT_URL = '/login/'
+# 2. Cuando inicie sesión con éxito, MÁNDALO AQUÍ (A la Asistencia):
+LOGIN_REDIRECT_URL = 'registro_asistencia'
+
+# 3. Cuando cierre sesión, mándalo de vuelta al login rojo:
+LOGOUT_REDIRECT_URL = 'login_asistencia'
