@@ -14,33 +14,48 @@ from asistencia.forms import ValidarCorreoResetForm
 
 urlpatterns = [
     # ==============================================================================
-    # RUTAS DEL SISTEMA
+    # 1. RUTAS PERSONALIZADAS DEL ADMIN (DASHBOARD Y EXCEL)
     # ==============================================================================
-
-    # --- 1. RUTAS PERSONALIZADAS DEL ADMIN (DASHBOARD Y EXCEL) ---
     path('admin/dashboard/', views.dashboard, name='dashboard'),
     path('admin/exportar-excel/', views.exportar_asistencias_excel, name='exportar_excel'),
 
-    # --- 2. ADMIN OFICIAL DE DJANGO (Vuelve el Login Morado/Jazzmin) ---
+    # ==============================================================================
+    # 2. 🔥 CORRECCIÓN: LOGOUT DEL ADMIN (INTERCEPTOR)
+    # Esta línea obliga a que si sales del Admin, vuelvas al login MORADO (/admin/login/)
+    # y no al rojo. Debe ir ANTES de admin.site.urls
+    # ==============================================================================
+    path('admin/logout/', auth_views.LogoutView.as_view(next_page='/admin/login/'), name='admin_logout'),
+
+    # ==============================================================================
+    # 3. ADMIN OFICIAL DE DJANGO
+    # ==============================================================================
     path('admin/', admin.site.urls),
 
-    # --- 3. NUEVA RUTA: CONSULTA PÚBLICA (ALUMNOS) ---
+    # ==============================================================================
+    # 4. RUTAS DEL SISTEMA DE ASISTENCIA
+    # ==============================================================================
+    
+    # Consulta Pública
     path('consulta/', views.consulta_publica, name='consulta_publica'),
 
-    # --- 4. RUTA INTELIGENTE (SEMÁFORO) ---
+    # Ruta Inteligente (Semáforo)
     path('smart-redirect/', smart_login_redirect, name='smart_redirect'),
 
-    # --- 5. LOGIN PERSONALIZADO (Solo en /login/) ---
+    # Login Rojo (Staff/Asistencia)
     path('login/', auth_views.LoginView.as_view(
             template_name='login_asistencia.html', 
             redirect_authenticated_user=True
         ), name='login_asistencia'),
 
-    # --- 6. OTRAS RUTAS ---
+    # Logout Rojo (Staff) - Este usa la configuración global de settings.py
     path('logout/', views.logout, name='logout'), 
+    
+    # Pantalla Principal (Registro)
     path('', views.registro_asistencia, name='registro_asistencia'),
 
-    # --- 7. RECUPERACIÓN DE CONTRASEÑA ---
+    # ==============================================================================
+    # 5. RECUPERACIÓN DE CONTRASEÑA
+    # ==============================================================================
     path('reset_password/', 
          auth_views.PasswordResetView.as_view(
              form_class=ValidarCorreoResetForm
